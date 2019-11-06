@@ -1,0 +1,1 @@
+export const db: string = "mongodb+srv://mtmiller:CISC474@mattsclutster-ht4pc.mongodb.net/test?retryWrites=true&w=majority";
