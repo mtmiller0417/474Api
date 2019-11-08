@@ -14,16 +14,6 @@ connect(db);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// What does this do???
-/*
-app.get("/", (req: Request, res: Response, next: NextFunction) => {
-  res.send("Hello World");
-});
-*/
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 app.get("/users", UserController.allUsers);
 
 app.get("/users/:id", UserController.showUser);
@@ -33,6 +23,7 @@ app.post("/users", UserController.addUser);
 app.patch("/users/:id", UserController.updateUser);
 
 app.delete("/users/:id", UserController.deleteUser);
+app.delete("/users", UserController.deleteAll);
 
 app.listen(port, () => {
   console.log(`Server running on ${port}`);

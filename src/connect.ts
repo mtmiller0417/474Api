@@ -7,10 +7,10 @@ import mongoose from "mongoose";
 export default (db: string) => {
   const connect = () => {
     mongoose
-      .connect(db, { useNewUrlParser: true })
+      .connect(db, { useNewUrlParser: true, useUnifiedTopology: true}) // second part gets rid of some deprecated warning
       .then(() => {
         //return console.log(`Successfully connected to ${db}`);
-        return console.log('\nSuccessfully connected to the database\n##############################################################')
+        return console.log('\nSuccessfully connected to the database')
       })
       .catch(error => {
         console.log("Error connecting to database: ", error);
