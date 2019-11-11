@@ -3,4 +3,4 @@
  */
 
 export const db: string = "mongodb+srv://mtmiller:CISC474@mattsclutster-ht4pc.mongodb.net/test?retryWrites=true&w=majority";
-export const secret: string = "I'm not sure what to make the secret"
+export const secret: string = "SECRETSTRING"

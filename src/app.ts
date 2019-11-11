@@ -11,19 +11,42 @@ const port: number = 5000 || process.env.PORT;
 
 connect(db);
 
+// Define routers
+const apiRoutes = express.Router(),
+      userRoutes = express.Router(),
+      groupRoutes = express.Router();
+
+//Connect routers together
+app.use('/api', apiRoutes);
+apiRoutes.use('/users',userRoutes);
+apiRoutes.use('/groups',groupRoutes);
+
+// Change to app if broken below
+
+// Add body parsers
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/users", UserController.allUsers);
+apiRoutes.use(bodyParser.json());
+apiRoutes.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/users/:id", UserController.showUser);
+userRoutes.use(bodyParser.json());
+userRoutes.use(bodyParser.urlencoded({ extended: true }));
 
-app.post("/users", UserController.addUser);
+// GET
+userRoutes.get("/", UserController.allUsers); // /users
+//userRoutes.get("/:id", UserController.showUser); // /users/:id
+userRoutes.get("/user_id", UserController.showUser); // /users/:id
 
-app.patch("/users/:id", UserController.updateUser);
+// POST
+userRoutes.post("/", UserController.addUser); // /users
 
-app.delete("/users/:id", UserController.deleteUser);
-app.delete("/users", UserController.deleteAll);
+// PUT
+userRoutes.patch("/:id", UserController.updateUser); // /:id
+
+// DELETE
+userRoutes.delete("/:id", UserController.deleteUser); // /:id
+userRoutes.delete("/", UserController.deleteAll); // /users
 
 app.listen(port, () => {
   console.log(`Server running on ${port}`);
