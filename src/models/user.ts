@@ -28,8 +28,6 @@ const UserSchema: Schema = new Schema({
 });
 
 UserSchema.methods.comparePassword = function (candidatePassword:any, cb:any) {
-    console.log(candidatePassword)
-    console.log(this.password)
     if (this.password==='*') {cb(null,false);return;}
     bcrypt.compare(candidatePassword, this.password, function (err:any, isMatch:any) {
       if (err) { console.log('ERROR: ' + err);return cb(err); }

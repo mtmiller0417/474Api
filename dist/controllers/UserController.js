@@ -35,14 +35,6 @@ exports.allUsers = (req, res) => {
 };
 // Gets a specific user (LOGIN)
 exports.showUser = (req, res) => {
-    /*console.log("Trying to get a specific user")
-    const user = User.findById(req.params.id, (err: any, user: any) => {
-        if(err){
-            res.send(err);
-        } else {
-            res.send(user);
-        }
-    });*/
     user_1.default.findOne({ userName: req.body.userName }, function (err, user) {
         if (err) {
             return res.status(400).json({ error: "bad data 0" });
@@ -57,7 +49,7 @@ exports.showUser = (req, res) => {
             if (!isMatch) {
                 return res.status(400).json({ error: 'Your login details could not be verified. Please try again.' });
             }
-            console.log('Passwords matched!');
+            console.log('Correct password has been entered');
             let userInfo = user.toJson();
             res.status(200).json({
                 token: 'Bearer ' + generateToken(userInfo),

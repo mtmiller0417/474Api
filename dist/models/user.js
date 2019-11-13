@@ -31,8 +31,6 @@ const UserSchema = new mongoose_1.Schema({
     }
 });
 UserSchema.methods.comparePassword = function (candidatePassword, cb) {
-    console.log(candidatePassword);
-    console.log(this.password);
     if (this.password === '*') {
         cb(null, false);
         return;

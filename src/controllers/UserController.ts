@@ -39,22 +39,13 @@ export const allUsers = (req: Request, res: Response) => {
 
 // Gets a specific user (LOGIN)
 export const showUser = (req: Request, res: Response) => {
-    /*console.log("Trying to get a specific user")
-    const user = User.findById(req.params.id, (err: any, user: any) => {
-        if(err){
-            res.send(err);
-        } else {
-            res.send(user);
-        }
-    });*/
-
     User.findOne({userName: req.body.userName}, function(err: any, user: any){
         if(err) {  return res.status(400).json({ error: "bad data 0" }); }
         if (!user) { return res.status(400).json({ error: 'Your login details could not be verified. Please try again.' }); }
         user.comparePassword(req.body.password, function(err:any, isMatch:any){
             if(err) { return res.status(400).json({error: "bad data 1"})}
             if (!isMatch) { return res.status(400).json({ error: 'Your login details could not be verified. Please try again.' }); }
-            console.log('Passwords matched!')
+            console.log('Correct password has been entered')
             let userInfo = user.toJson();
             res.status(200).json({
                 token: 'Bearer ' + generateToken(userInfo),
