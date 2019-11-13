@@ -6,9 +6,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
+const bcrypt_nodejs_1 = __importDefault(require("bcrypt-nodejs"));
 const UserSchema = new mongoose_1.Schema({
+    userName: {
+        type: String,
+        reqiured: true
+    },
+    password: {
+        type: String,
+        reqiured: true
+    },
     firstName: {
         type: String,
         required: true
@@ -18,6 +30,28 @@ const UserSchema = new mongoose_1.Schema({
         required: true
     }
 });
+UserSchema.methods.comparePassword = function (candidatePassword, cb) {
+    if (this.password === '*') {
+        cb(null, false);
+        return;
+    }
+    bcrypt_nodejs_1.default.compare(candidatePassword, this.password, function (err, isMatch) {
+        if (err) {
+            console.log('ERROR: ' + err);
+            return cb(err);
+        }
+        return cb(null, isMatch);
+    });
+};
+UserSchema.methods.toJson = function () {
+    return {
+        _id: this._id,
+        userName: this.userName,
+        password: this.password,
+        firstName: this.firstName,
+        lastName: this.lastName,
+    };
+};
 const User = mongoose_1.default.model("User", UserSchema);
 exports.default = User;
 //# sourceMappingURL=user.js.map
