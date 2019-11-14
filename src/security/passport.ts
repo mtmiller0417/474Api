@@ -17,10 +17,7 @@ const jwtOptions = {
 const JWTLogin = new JwtStrategy(jwtOptions, function (payload, done) {
     let id = new mongoose.Types.ObjectId(payload._id);
     User.findById(id, function (err, user) {
-        console.log('made it here')
         if (err) { return done(err, false); }
-
-        console.log('made it past that')
         if (user) {
             done(null, user);
         } else {

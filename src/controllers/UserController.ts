@@ -20,17 +20,11 @@ function generateToken(user: any) {
 export const allUsers = (req: Request, res: Response) => {
     console.log('\nTrying to get all users');
     console.log(req.body)
-    
-    //var allUsers:any[] = []
 
     const users = User.find((err: any, user: any) => {
         if(err){
             res.send(err);
         } else {
-            //console.log(user.firstName)
-            //console.log(user)
-            //allUsers.push(user)
-            //console.log(name_list)
             console.log(user)
             res.send(user)
         }
@@ -39,6 +33,7 @@ export const allUsers = (req: Request, res: Response) => {
 
 // Gets a specific user (LOGIN)
 export const showUser = (req: Request, res: Response) => {
+    console.log('\nGet a specific user')
     User.findOne({userName: req.body.userName}, function(err: any, user: any){
         if(err) {  return res.status(400).json({ error: "bad data 0" }); }
         if (!user) { return res.status(400).json({ error: 'Your login details could not be verified. Please try again.' }); }
@@ -120,10 +115,10 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
 export const updateUser = async (req: Request, res: Response) => {
     console.log("\nTrying to update a user")
 
-    const userName:string = req.body.userName;
-    const password:string = req.body.password;
-    const firstName:string = req.body.firstName;
-    const lastName:string = req.body.lastName;
+    var userName:string = req.body.userName;
+    var password:string = req.body.password;
+    var firstName:string = req.body.firstName;
+    var lastName:string = req.body.lastName;
 
     // Create the initial JSON
     var update = { 
@@ -132,10 +127,13 @@ export const updateUser = async (req: Request, res: Response) => {
         firstName: firstName,
         lastName: lastName
     }
+    // Get rid of attributes
     if(!userName){ delete update.userName }
     if(!password){ delete update.password }
     if(!firstName){ delete update.firstName }
     if(!lastName){ delete update.lastName }
+
+    if(password){ update.password = bcrypt.hashSync(password); console.log(password); }
 
     // remove undefined things from the JSON???
     console.log(update)

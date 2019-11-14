@@ -27,16 +27,11 @@ function generateToken(user) {
 exports.allUsers = (req, res) => {
     console.log('\nTrying to get all users');
     console.log(req.body);
-    //var allUsers:any[] = []
     const users = user_1.default.find((err, user) => {
         if (err) {
             res.send(err);
         }
         else {
-            //console.log(user.firstName)
-            //console.log(user)
-            //allUsers.push(user)
-            //console.log(name_list)
             console.log(user);
             res.send(user);
         }
@@ -131,10 +126,10 @@ exports.addUser = (req, res, next) => {
 // Update a user
 exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("\nTrying to update a user");
-    const userName = req.body.userName;
-    const password = req.body.password;
-    const firstName = req.body.firstName;
-    const lastName = req.body.lastName;
+    var userName = req.body.userName;
+    var password = req.body.password;
+    var firstName = req.body.firstName;
+    var lastName = req.body.lastName;
     // Create the initial JSON
     var update = {
         userName: userName,
@@ -142,6 +137,23 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         firstName: firstName,
         lastName: lastName
     };
+    // Get rid of attributes
+    if (!userName) {
+        delete update.userName;
+    }
+    if (!password) {
+        delete update.password;
+    }
+    if (!firstName) {
+        delete update.firstName;
+    }
+    if (!lastName) {
+        delete update.lastName;
+    }
+    if (password) {
+        update.password = bcrypt_nodejs_1.default.hashSync(password);
+        console.log(password);
+    }
     // remove undefined things from the JSON???
     console.log(update);
     const user = yield user_1.default.findById({ _id: req.body._id }); // Wait for this response
@@ -153,26 +165,6 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             res.send('User has been updated');
         }
     });
-    /*let user = User.findById({_id: req.body._id}, (err: any) => {
-        if (err){
-            res.send(err);
-        } else {
-            console.log('You have updated the user');
-            res.send(req.body)
-        }
-    });*/
-    /*let user = User.findByIdAndUpdate(
-        req.body.id,
-        req.body,
-        (err: any, user: any) => {
-            if (err) {
-                res.send(err);
-            } else {
-                console.log(user)
-                res.send(user);
-            }
-        }
-    );*/
 });
 exports.deleteUser = (req, res) => {
     console.log("\nTrying to delete a specific user");

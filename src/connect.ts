@@ -23,7 +23,6 @@ export default (db: string) => {
 };
 
 /*
-
 export default(db: string) => {
     const connect = () => {
         mongoose.connect(db, {useNewUrlParser: true});

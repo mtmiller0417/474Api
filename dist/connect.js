@@ -24,7 +24,6 @@ exports.default = (db) => {
     mongoose_1.default.connection.on("disconnected", connect);
 };
 /*
-
 export default(db: string) => {
     const connect = () => {
         mongoose.connect(db, {useNewUrlParser: true});
