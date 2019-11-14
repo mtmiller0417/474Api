@@ -6,21 +6,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const passport_1 = __importDefault(require("passport"));
 const passport_jwt_1 = __importDefault(require("passport-jwt"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const config_1 = require("../config/config");
 const user_1 = __importDefault(require("../models/user"));
+const config_1 = require("../config/config");
 const ExtractJwt = passport_jwt_1.default.ExtractJwt;
 const JwtStrategy = passport_jwt_1.default.Strategy;
 const jwtOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config_1.db
+    secretOrKey: config_1.secret
 };
 // Setting up JWT login strategy
 const JWTLogin = new JwtStrategy(jwtOptions, function (payload, done) {
     let id = new mongoose_1.default.Types.ObjectId(payload._id);
     user_1.default.findById(id, function (err, user) {
+        console.log('made it here');
         if (err) {
             return done(err, false);
         }
+        console.log('made it past that');
         if (user) {
             done(null, user);
         }

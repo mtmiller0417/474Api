@@ -4,6 +4,7 @@ import bodyParser from "body-parser"
 import connect from "./connect";
 import { db } from "./config/config";
 import * as UserController from "./controllers/UserController";
+import { requireAuth } from './security/passport'
 
 const app: Application = express();
 const port: number = 5000 || process.env.PORT;
@@ -35,14 +36,13 @@ userRoutes.use(bodyParser.urlencoded({ extended: true }));
 
 // GET
 userRoutes.get("/", UserController.allUsers); // /users
-//userRoutes.get("/:id", UserController.showUser); // /users/:id
-userRoutes.get("/user_id", UserController.showUser); // /users/:id
+userRoutes.get("/user_id", UserController.showUser);
 
 // POST
 userRoutes.post("/", UserController.addUser); // /users
 
 // PUT
-userRoutes.patch("/:id", UserController.updateUser); // /:id
+userRoutes.put("/user_id", requireAuth, UserController.updateUser);
 
 // DELETE
 userRoutes.delete("/:id", UserController.deleteUser); // /:id

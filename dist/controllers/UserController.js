@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -62,6 +71,7 @@ exports.showUser = (req, res) => {
 exports.addUser = (req, res, next) => {
     console.log("\nRegister new user");
     console.log(req.body);
+    console.log(next);
     const userName = req.body.userName;
     const password = req.body.password;
     const firstName = req.body.firstName;
@@ -119,20 +129,54 @@ exports.addUser = (req, res, next) => {
     */
 };
 // Update a user
-exports.updateUser = (req, res) => {
+exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("\nTrying to update a user");
-    let user = user_1.default.findByIdAndUpdate(req.params.id, req.body, (err, user) => {
+    const userName = req.body.userName;
+    const password = req.body.password;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    // Create the initial JSON
+    var update = {
+        userName: userName,
+        password: password,
+        firstName: firstName,
+        lastName: lastName
+    };
+    // remove undefined things from the JSON???
+    console.log(update);
+    const user = yield user_1.default.findById({ _id: req.body._id }); // Wait for this response
+    yield user_1.default.updateOne({ _id: req.body._id }, update, (err) => {
         if (err) {
             res.send(err);
         }
         else {
-            res.send(user);
+            res.send('User has been updated');
         }
     });
-};
+    /*let user = User.findById({_id: req.body._id}, (err: any) => {
+        if (err){
+            res.send(err);
+        } else {
+            console.log('You have updated the user');
+            res.send(req.body)
+        }
+    });*/
+    /*let user = User.findByIdAndUpdate(
+        req.body.id,
+        req.body,
+        (err: any, user: any) => {
+            if (err) {
+                res.send(err);
+            } else {
+                console.log(user)
+                res.send(user);
+            }
+        }
+    );*/
+});
 exports.deleteUser = (req, res) => {
     console.log("\nTrying to delete a specific user");
-    const user = user_1.default.deleteOne({ _id: req.params.id }, (err) => {
+    const user = user_1.default.deleteOne({ _id: req.body.id }, (err) => {
         if (err) {
             res.send(err);
         }
@@ -141,7 +185,7 @@ exports.deleteUser = (req, res) => {
         }
     });
 };
-exports.deleteAll = (req, res) => {
+exports.deleteAll = (_req, res) => {
     console.log("\nTrying to delete all users");
     const users = user_1.default.deleteOne((err, user) => {
         if (err) {

@@ -59,6 +59,7 @@ export const showUser = (req: Request, res: Response) => {
 export const addUser = (req: Request, res: Response, next: NextFunction) => {
     console.log("\nRegister new user")
     console.log(req.body)
+    console.log(next)
     const userName = req.body.userName;
     const password = req.body.password;
     const firstName = req.body.firstName;
@@ -116,24 +117,43 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
 };
 
 // Update a user
-export const updateUser = (req: Request, res: Response) => {
+export const updateUser = async (req: Request, res: Response) => {
     console.log("\nTrying to update a user")
-    let user = User.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        (err: any, user: any) => {
-            if (err) {
-                res.send(err);
-            } else {
-                res.send(user);
-            }
+
+    const userName:string = req.body.userName;
+    const password:string = req.body.password;
+    const firstName:string = req.body.firstName;
+    const lastName:string = req.body.lastName;
+
+    // Create the initial JSON
+    var update = { 
+        userName: userName,
+        password: password,
+        firstName: firstName,
+        lastName: lastName
+    }
+    if(!userName){ delete update.userName }
+    if(!password){ delete update.password }
+    if(!firstName){ delete update.firstName }
+    if(!lastName){ delete update.lastName }
+
+    // remove undefined things from the JSON???
+    console.log(update)
+
+    const user = await User.findById({_id:req.body._id}); // Wait for this response
+    
+    await User.updateOne({_id:req.body._id}, update, (err: any) => {
+        if(err){
+            res.send(err);
+        } else {
+            res.send('User has been updated')
         }
-    );
+    });
 };
 
 export const deleteUser = (req: Request, res: Response) => {
     console.log("\nTrying to delete a specific user")
-    const user = User.deleteOne({_id: req.params.id}, (err: any) => {
+    const user = User.deleteOne({_id: req.body.id}, (err: any) => {
         if (err) {
             res.send(err);
         } else {
@@ -142,7 +162,7 @@ export const deleteUser = (req: Request, res: Response) => {
     });
 };
 
-export const deleteAll = (req: Request, res: Response) => {
+export const deleteAll = (_req: Request, res: Response) => {
     console.log("\nTrying to delete all users")
     const users = User.deleteOne((err: any, user: any) => {
         if(err){

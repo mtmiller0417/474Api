@@ -10,7 +10,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 exports.default = (db) => {
     const connect = () => {
         mongoose_1.default
-            .connect(db, { useNewUrlParser: true, useUnifiedTopology: true }) // second part gets rid of some deprecated warning
+            .connect(db, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }) // second part gets rid of some deprecated warning
             .then(() => {
             //return console.log(`Successfully connected to ${db}`);
             return console.log('\nSuccessfully connected to the database');

@@ -15,6 +15,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const connect_1 = __importDefault(require("./connect"));
 const config_1 = require("./config/config");
 const UserController = __importStar(require("./controllers/UserController"));
+const passport_1 = require("./security/passport");
 const app = express_1.default();
 const port = 5000 || process.env.PORT;
 //const db: string = "mongodb://<username>:<password>@mongo.mlab.com:<port>/<database_name>"
@@ -35,12 +36,11 @@ userRoutes.use(body_parser_1.default.json());
 userRoutes.use(body_parser_1.default.urlencoded({ extended: true }));
 // GET
 userRoutes.get("/", UserController.allUsers); // /users
-//userRoutes.get("/:id", UserController.showUser); // /users/:id
-userRoutes.get("/user_id", UserController.showUser); // /users/:id
+userRoutes.get("/user_id", UserController.showUser);
 // POST
 userRoutes.post("/", UserController.addUser); // /users
 // PUT
-userRoutes.patch("/:id", UserController.updateUser); // /:id
+userRoutes.put("/user_id", passport_1.requireAuth, UserController.updateUser);
 // DELETE
 userRoutes.delete("/:id", UserController.deleteUser); // /:id
 userRoutes.delete("/", UserController.deleteAll); // /users
