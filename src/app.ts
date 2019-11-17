@@ -4,6 +4,7 @@ import bodyParser from "body-parser"
 import connect from "./connect";
 import { db } from "./config/config";
 import * as UserController from "./controllers/UserController";
+import * as GroupController from "./controllers/GroupController";
 import { requireAuth } from './security/passport'
 
 const app: Application = express();
@@ -34,19 +35,33 @@ apiRoutes.use(bodyParser.urlencoded({ extended: true }));
 userRoutes.use(bodyParser.json());
 userRoutes.use(bodyParser.urlencoded({ extended: true }));
 
+groupRoutes.use(bodyParser.json());
+groupRoutes.use(bodyParser.urlencoded({ extended: true }));
+
 // GET
-userRoutes.get("/", UserController.allUsers); // /users
+userRoutes.get("/", UserController.allUsers); 
 userRoutes.get("/user_id", UserController.showUser);
+groupRoutes.get("/", GroupController.allGroups);
+groupRoutes.get("/group_id", GroupController.showGroup);
 
 // POST
-userRoutes.post("/", UserController.addUser); // /users
+userRoutes.post("/", UserController.addUser); 
+groupRoutes.post("/", GroupController.createGroup);
+groupRoutes.post("/messages", GroupController.createMessage);
+groupRoutes.post("/events", GroupController.createEvent);
+
 
 // PUT
 userRoutes.put("/user_id", requireAuth, UserController.updateUser);
+groupRoutes.put("/message", GroupController.editMessage);
+groupRoutes.put("/event", GroupController.editEvent);
 
 // DELETE
-userRoutes.delete("/:id", UserController.deleteUser); // /:id
-userRoutes.delete("/", UserController.deleteAll); // /users
+userRoutes.delete("/user_id", UserController.deleteUser); // This function may need editing
+userRoutes.delete("/", UserController.deleteAll); 
+groupRoutes.delete("/group_id", GroupController.deleteGroup);
+groupRoutes.delete("/event", GroupController.deleteEvent);
+
 
 app.listen(port, () => {
   console.log(`Server running on ${port}`);

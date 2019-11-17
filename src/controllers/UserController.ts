@@ -2,7 +2,6 @@
 import { Request, Response } from "express";
 import User from "../models/user";
 import jwt from 'jsonwebtoken'
-import { db } from '../config/config'
 import { secret } from '../config/config'
 import { NextFunction } from "connect";
 import bcrypt from 'bcrypt-nodejs';
@@ -15,6 +14,8 @@ function generateToken(user: any) {
         expiresIn: 10080 // in seconds
     });
 }
+
+// GETs
 
 // Gets all the users
 export const allUsers = (req: Request, res: Response) => {
@@ -31,10 +32,15 @@ export const allUsers = (req: Request, res: Response) => {
     });
 };
 
+// Gets all the groupsIDs for a specific user
+export const getGroupIDs = (req: Request, res: Response) => {
+
+}
+
 // Gets a specific user (LOGIN)
 export const showUser = (req: Request, res: Response) => {
     console.log('\nGet a specific user')
-    User.findOne({userName: req.body.userName}, function(err: any, user: any){
+    User.findOne({username: req.body.username}, function(err: any, user: any){
         if(err) {  return res.status(400).json({ error: "bad data 0" }); }
         if (!user) { return res.status(400).json({ error: 'Your login details could not be verified. Please try again.' }); }
         user.comparePassword(req.body.password, function(err:any, isMatch:any){
@@ -50,18 +56,20 @@ export const showUser = (req: Request, res: Response) => {
     });
 };
 
+// POSTs
+
 // Register a new user
 export const addUser = (req: Request, res: Response, next: NextFunction) => {
     console.log("\nRegister new user")
     console.log(req.body)
-    console.log(next)
-    const userName = req.body.userName;
+    
+    const username = req.body.username;
     const password = req.body.password;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
 
     // Check if ID is present
-    if(!userName){
+    if(!username){
         return res.status(422).send({ error: 'No username passed to register against.' })
     }
     if(!password){
@@ -74,14 +82,17 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
 
     let hash = bcrypt.hashSync(password) // Use hashSync with default saltRounds
 
-    User.findOne({userName: userName}, function(err, existingUser){
-        if (err) { return next(err); }
+    User.findOne({username: username}, function(err, existingUser){
+        //if (err) { return next(err); }
+        if (err) {
+            return res.status(422).send({ error: 'There was an error finding user :(' });
+        }
         if (existingUser) {
             // User already exists...
             return res.status(422).send({ error: 'This username is already taken.' });
         } else {
             var user = new User({
-                userName: userName,
+                username: username,
                 password: hash,
                 firstName: firstName, 
                 lastName: lastName,
@@ -115,20 +126,20 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
 export const updateUser = async (req: Request, res: Response) => {
     console.log("\nTrying to update a user")
 
-    var userName:string = req.body.userName;
+    var username:string = req.body.username;
     var password:string = req.body.password;
     var firstName:string = req.body.firstName;
     var lastName:string = req.body.lastName;
 
     // Create the initial JSON
     var update = { 
-        userName: userName,
+        username: username,
         password: password,
         firstName: firstName,
         lastName: lastName
     }
     // Get rid of attributes
-    if(!userName){ delete update.userName }
+    if(!username){ delete update.username }
     if(!password){ delete update.password }
     if(!firstName){ delete update.firstName }
     if(!lastName){ delete update.lastName }

@@ -15,6 +15,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const connect_1 = __importDefault(require("./connect"));
 const config_1 = require("./config/config");
 const UserController = __importStar(require("./controllers/UserController"));
+const GroupController = __importStar(require("./controllers/GroupController"));
 const passport_1 = require("./security/passport");
 const app = express_1.default();
 const port = 5000 || process.env.PORT;
@@ -34,16 +35,27 @@ apiRoutes.use(body_parser_1.default.json());
 apiRoutes.use(body_parser_1.default.urlencoded({ extended: true }));
 userRoutes.use(body_parser_1.default.json());
 userRoutes.use(body_parser_1.default.urlencoded({ extended: true }));
+groupRoutes.use(body_parser_1.default.json());
+groupRoutes.use(body_parser_1.default.urlencoded({ extended: true }));
 // GET
-userRoutes.get("/", UserController.allUsers); // /users
+userRoutes.get("/", UserController.allUsers);
 userRoutes.get("/user_id", UserController.showUser);
+groupRoutes.get("/", GroupController.allGroups);
+groupRoutes.get("/group_id", GroupController.showGroup);
 // POST
-userRoutes.post("/", UserController.addUser); // /users
+userRoutes.post("/", UserController.addUser);
+groupRoutes.post("/", GroupController.createGroup);
+groupRoutes.post("/messages", GroupController.createMessage);
+groupRoutes.post("/events", GroupController.createEvent);
 // PUT
 userRoutes.put("/user_id", passport_1.requireAuth, UserController.updateUser);
+groupRoutes.put("/message", GroupController.editMessage);
+groupRoutes.put("/event", GroupController.editEvent);
 // DELETE
-userRoutes.delete("/:id", UserController.deleteUser); // /:id
-userRoutes.delete("/", UserController.deleteAll); // /users
+userRoutes.delete("/user_id", UserController.deleteUser); // This function may need editing
+userRoutes.delete("/", UserController.deleteAll);
+groupRoutes.delete("/group_id", GroupController.deleteGroup);
+groupRoutes.delete("/event", GroupController.deleteEvent);
 app.listen(port, () => {
     console.log(`Server running on ${port}`);
 });
