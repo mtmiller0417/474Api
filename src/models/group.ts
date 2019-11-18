@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+// Add group image variable
+
 export interface GroupInterface extends Document {
     groupName: String;
     members: [String];
@@ -17,6 +19,7 @@ export interface GroupInterface extends Document {
         username: String,
         time: String
     }];
+    groupImage: String;
 }
 
 const GroupSchema: Schema = new Schema({
@@ -47,6 +50,10 @@ const GroupSchema: Schema = new Schema({
             time: String
         }],
         required: false
+    },
+    groupImage:{
+        type: String,  
+        required: false
     }
 });
 
@@ -56,7 +63,8 @@ GroupSchema.methods.toJson = function () {
       groupName: this.groupName,
       members: this.members,
       messages: this.messages,
-      events: this.events
+      events: this.events,
+      groupImage: this.groupImage
     }
   }
 

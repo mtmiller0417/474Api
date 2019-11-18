@@ -16,6 +16,8 @@ const user_1 = __importDefault(require("../models/user"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config/config");
 const bcrypt_nodejs_1 = __importDefault(require("bcrypt-nodejs"));
+const passport_1 = require("../security/passport");
+const passport_2 = require("../security/passport");
 // Used for bcrypt
 const saltRounds = 10;
 function generateToken(user) {
@@ -40,6 +42,23 @@ exports.allUsers = (req, res) => {
 };
 // Gets all the groupsIDs for a specific user
 exports.getGroupIDs = (req, res) => {
+    // Pass token in the header and user_id in the body 
+    // Check if the user is accessing their own data
+    /*if(compareHeaderUserID(req.body._id, req.headers.authorization)){
+        return res.status(422).send({ error: 'You attempted to access data that is not yours' });
+    }*/
+    const userjson = passport_1.parseUserFromHeader(req.headers.authorization);
+    user_1.default.findOne({ _id: userjson._id }, function (err, user) {
+        if (err) {
+            return res.status(400).json({ error: "bad data 0" });
+        }
+        if (!user) {
+            return res.status(400).json({ error: 'User not found' });
+        }
+        else {
+            res.send(user.groupIDs);
+        }
+    });
 };
 // Gets a specific user (LOGIN)
 exports.showUser = (req, res) => {
@@ -59,7 +78,7 @@ exports.showUser = (req, res) => {
                 return res.status(400).json({ error: 'Your login details could not be verified. Please try again.' });
             }
             console.log('Correct password has been entered');
-            let userInfo = user.toJson();
+            const userInfo = user.toJson();
             res.status(200).json({
                 token: 'Bearer ' + generateToken(userInfo),
                 user: userInfo
@@ -76,6 +95,9 @@ exports.addUser = (req, res, next) => {
     const password = req.body.password;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
+    const profilePicture = req.body.profilePicture;
+    const bio = req.body.bio;
+    var groupIDs = req.body.groupIDs;
     // Check if ID is present
     if (!username) {
         return res.status(422).send({ error: 'No username passed to register against.' });
@@ -86,6 +108,9 @@ exports.addUser = (req, res, next) => {
     // Check if firstName and lastName exist
     if (!firstName || !lastName) {
         return res.status(422).send({ error: 'You must enter your full name.' });
+    }
+    if (!groupIDs) {
+        groupIDs = [];
     }
     let hash = bcrypt_nodejs_1.default.hashSync(password); // Use hashSync with default saltRounds
     user_1.default.findOne({ username: username }, function (err, existingUser) {
@@ -103,6 +128,9 @@ exports.addUser = (req, res, next) => {
                 password: hash,
                 firstName: firstName,
                 lastName: lastName,
+                profilePicture: profilePicture,
+                bio: bio,
+                groupIDs: groupIDs
             });
             user.save(function (err, user) {
                 if (err) {
@@ -116,32 +144,40 @@ exports.addUser = (req, res, next) => {
             });
         }
     });
-    /*
-    console.log("Trying to add a new user")
-    const user = new User(req.body);//req.body,req.query
-    console.log(req.body)
-    user.save((err: any) => {
-        if(err){
-            res.send(err);
-        } else {
-            res.send(user);
-        }
-    });
-    */
 };
+/* Moved to passport.ts */
+/*const parseUserFromHeader = (authorization_header: string) => {
+    const start_pos = authorization_header.indexOf('.');
+    const end_pos = authorization_header.indexOf('.', start_pos+1);
+    // Get the substring of the base64 user
+    const str = authorization_header.substring(start_pos+1, end_pos);
+    // Convert the base64 to a string
+    var strJson = atob(str);
+    return JSON.parse(strJson);
+};*/
 // Update a user
 exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("\nTrying to update a user");
+    // Check if the user is accessing their own data
+    if (passport_2.compareHeaderUserID(req.body._id, req.headers.authorization)) {
+        return res.status(422).send({ error: 'You attempted to access data that is not yours' });
+    }
     var username = req.body.username;
     var password = req.body.password;
     var firstName = req.body.firstName;
     var lastName = req.body.lastName;
+    var profilePicture = req.body.profilePicture;
+    var bio = req.body.bio;
+    var groupIDs = req.body.groupIDs;
     // Create the initial JSON
     var update = {
         username: username,
         password: password,
         firstName: firstName,
-        lastName: lastName
+        lastName: lastName,
+        profilePicture: profilePicture,
+        bio: bio,
+        groupIDs: groupIDs
     };
     // Get rid of attributes
     if (!username) {
@@ -156,13 +192,21 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     if (!lastName) {
         delete update.lastName;
     }
+    if (!profilePicture) {
+        delete update.profilePicture;
+    }
+    if (!bio) {
+        delete update.bio;
+    }
+    if (!groupIDs) {
+        delete update.groupIDs;
+    }
+    // If they're changing their password, make sure to ecrypt it
     if (password) {
         update.password = bcrypt_nodejs_1.default.hashSync(password);
         console.log(password);
     }
-    // remove undefined things from the JSON???
-    console.log(update);
-    const user = yield user_1.default.findById({ _id: req.body._id }); // Wait for this response
+    //const user = await User.findById({_id:req.body._id}); // Wait for this response
     yield user_1.default.updateOne({ _id: req.body._id }, update, (err) => {
         if (err) {
             res.send(err);
@@ -174,7 +218,7 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.deleteUser = (req, res) => {
     console.log("\nTrying to delete a specific user");
-    const user = user_1.default.deleteOne({ _id: req.body.id }, (err) => {
+    const user = user_1.default.deleteOne({ _id: req.body._id }, (err) => {
         if (err) {
             res.send(err);
         }
@@ -183,7 +227,8 @@ exports.deleteUser = (req, res) => {
         }
     });
 };
-exports.deleteAll = (_req, res) => {
+// Actually deletes the first user in the database...
+exports.deleteAll = (req, res) => {
     console.log("\nTrying to delete all users");
     const users = user_1.default.deleteOne((err, user) => {
         if (err) {

@@ -6,14 +6,8 @@ import { secret } from '../config/config'
 import { NextFunction } from "connect";
 import bcrypt from 'bcrypt-nodejs';
 
-// Used for bcrypt
-/*const saltRounds:number = 10;
-
-function generateToken(group: any) {
-    return jwt.sign(group, secret, {
-        expiresIn: 10080 // in seconds
-    });
-}*/
+import { parseUserFromHeader } from '../security/passport'
+import { compareHeaderUserID } from '../security/passport'
 
 // GETs
 
@@ -60,6 +54,7 @@ export const createGroup = (req: Request, res: Response, next: NextFunction) => 
     var members = req.body.members;
     var messages = req.body.messages;
     var events = req.body.events;
+    var groupImage = req.body.groupImage;
 
     if (!groupName) {
         return res.status(422).send({error: 'You must enter a group name.'})
@@ -68,36 +63,28 @@ export const createGroup = (req: Request, res: Response, next: NextFunction) => 
     if (!members) {
         return res.status(422).send({error: 'You must have at least one member in a group.'})
     }
+    var group = new Group({
+        groupName: groupName,
+        members: members,
+        messages: messages,
+        events: events,
+        groupImage: groupImage
+    });
 
-    /*Group.findOne({groupName: groupName}, function(err) {
-        if (err) {
-            return res.status(422).send({error: 'There was an error finding the group.'})
-        } else {*/
-            var group = new Group({
-                groupName: groupName,
-                members: members,
-                messages: messages,
-                events: events
-            });
-
-            group.save(function(err, group){
-                if (err) {return (err);}
-                let groupInfo = group.toJSON();
-                res.status(201).json({
-                    group: groupInfo
-                });
-            });
-        /*}
-    })*/
-    /**
-     * 
-    
-     */
+    group.save(function(err, group){
+        if (err) {return (err);}
+        let groupInfo = group.toJSON();
+        res.status(201).json({
+            group: groupInfo
+        });
+    });
 }
 
 // Creates a new message for a specific group
 export const createMessage = (req: Request, res: Response) => {
+    // Takes in group_id and message
     console.log('\nTrying to create a message')
+    // get groups with await
 }
 
 // Creates a new event for a specific group
@@ -124,7 +111,7 @@ export const editEvent = (req: Request, res: Response) => {
 // Deletes a specific group
 export const deleteGroup = (req: Request, res: Response) => {
     console.log('\nTrying to delete a specific group')
-    const group = Group.deleteOne({_id: req.body.id}, (err: any) => {
+    const group = Group.deleteOne({_id: req.body._id}, (err: any) => {
         if (err) {
             res.send(err);
         } else {

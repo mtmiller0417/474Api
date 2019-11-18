@@ -1,6 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from 'bcrypt-nodejs';
 
+// Add pending requests
+
 export interface UserInterface extends Document {
     username: String,
     password: String,
@@ -38,7 +40,7 @@ const UserSchema: Schema = new Schema({
     },
     groupIDs:{
       type: [Number],
-      required: true
+      required: false
     }
 });
 

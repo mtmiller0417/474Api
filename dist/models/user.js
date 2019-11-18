@@ -39,7 +39,7 @@ const UserSchema = new mongoose_1.Schema({
     },
     groupIDs: {
         type: [Number],
-        required: true
+        required: false
     }
 });
 UserSchema.methods.comparePassword = function (candidatePassword, cb) {

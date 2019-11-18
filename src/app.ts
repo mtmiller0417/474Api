@@ -41,6 +41,7 @@ groupRoutes.use(bodyParser.urlencoded({ extended: true }));
 // GET
 userRoutes.get("/", UserController.allUsers); 
 userRoutes.get("/user_id", requireAuth, UserController.showUser);
+userRoutes.get("/group_id", requireAuth, UserController.getGroupIDs);
 groupRoutes.get("/", GroupController.allGroups);
 groupRoutes.get("/group_id", GroupController.showGroup);
 

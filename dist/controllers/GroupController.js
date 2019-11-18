@@ -4,14 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const group_1 = __importDefault(require("../models/group"));
-// Used for bcrypt
-/*const saltRounds:number = 10;
-
-function generateToken(group: any) {
-    return jwt.sign(group, secret, {
-        expiresIn: 10080 // in seconds
-    });
-}*/
 // GETs
 // Get all groups
 exports.allGroups = (req, res) => {
@@ -61,10 +53,6 @@ exports.createGroup = (req, res, next) => {
     if (!members) {
         return res.status(422).send({ error: 'You must have at least one member in a group.' });
     }
-    /*Group.findOne({groupName: groupName}, function(err) {
-        if (err) {
-            return res.status(422).send({error: 'There was an error finding the group.'})
-        } else {*/
     var group = new group_1.default({
         groupName: groupName,
         members: members,
@@ -80,12 +68,6 @@ exports.createGroup = (req, res, next) => {
             group: groupInfo
         });
     });
-    /*}
-})*/
-    /**
-     *
-    
-     */
 };
 // Creates a new message for a specific group
 exports.createMessage = (req, res) => {
@@ -109,7 +91,7 @@ exports.editEvent = (req, res) => {
 // Deletes a specific group
 exports.deleteGroup = (req, res) => {
     console.log('\nTrying to delete a specific group');
-    const group = group_1.default.deleteOne({ _id: req.body.id }, (err) => {
+    const group = group_1.default.deleteOne({ _id: req.body._id }, (err) => {
         if (err) {
             res.send(err);
         }
