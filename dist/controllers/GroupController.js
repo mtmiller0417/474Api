@@ -4,15 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const group_1 = __importDefault(require("../models/group"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const config_1 = require("../config/config");
 // Used for bcrypt
-const saltRounds = 10;
-function generateToken(group) {
-    return jsonwebtoken_1.default.sign(group, config_1.secret, {
+/*const saltRounds:number = 10;
+
+function generateToken(group: any) {
+    return jwt.sign(group, secret, {
         expiresIn: 10080 // in seconds
     });
-}
+}*/
 // GETs
 // Get all groups
 exports.allGroups = (req, res) => {
@@ -30,7 +29,8 @@ exports.allGroups = (req, res) => {
 // Gets a specific group
 exports.showGroup = (req, res) => {
     console.log('\nTrying to get a specific group');
-    group_1.default.findOne({ _id: req.body.id }, function (err, group) {
+    console.log(req.body);
+    group_1.default.findOne({ _id: req.body._id }, function (err, group) {
         if (err) {
             return res.status(400).json({ error: 'bad data 0' });
         }
@@ -62,28 +62,27 @@ exports.createGroup = (req, res, next) => {
     if (!members) {
         return res.status(422).send({ error: 'You must have at least one member in a group.' });
     }
-    group_1.default.findOne({ groupName: groupName }, function (err) {
+    /*Group.findOne({groupName: groupName}, function(err) {
         if (err) {
-            return res.status(422).send({ error: 'There was an error finding the group.' });
-        }
-        else {
-            var group = new group_1.default({
-                groupName: groupName,
-                members: members,
-                messages: messages,
-                events: events
-            });
-            group.save(function (err, group) {
-                if (err) {
-                    return (err);
-                }
-                let groupInfo = group.toJSON();
-                res.status(201).json({
-                    group: groupInfo
-                });
-            });
-        }
+            return res.status(422).send({error: 'There was an error finding the group.'})
+        } else {*/
+    var group = new group_1.default({
+        groupName: groupName,
+        members: members,
+        messages: messages,
+        events: events
     });
+    group.save(function (err, group) {
+        if (err) {
+            return (err);
+        }
+        let groupInfo = group.toJSON();
+        res.status(201).json({
+            group: groupInfo
+        });
+    });
+    /*}
+})*/
     /**
      *
     

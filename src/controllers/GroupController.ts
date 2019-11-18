@@ -7,13 +7,13 @@ import { NextFunction } from "connect";
 import bcrypt from 'bcrypt-nodejs';
 
 // Used for bcrypt
-const saltRounds:number = 10;
+/*const saltRounds:number = 10;
 
 function generateToken(group: any) {
     return jwt.sign(group, secret, {
         expiresIn: 10080 // in seconds
     });
-}
+}*/
 
 // GETs
 
@@ -33,7 +33,7 @@ export const allGroups = (req: Request, res: Response) => {
 // Gets a specific group
 export const showGroup = (req: Request, res: Response) => {
     console.log('\nTrying to get a specific group');
-    Group.findOne({_id: req.body.id}, function(err: any, group: any) {
+    Group.findOne({_id: req.body._id}, function(err: any, group: any) {
         if (err) {
             return res.status(400).json({error: 'bad data 0'});
         }
@@ -69,10 +69,10 @@ export const createGroup = (req: Request, res: Response, next: NextFunction) => 
         return res.status(422).send({error: 'You must have at least one member in a group.'})
     }
 
-    Group.findOne({groupName: groupName}, function(err) {
+    /*Group.findOne({groupName: groupName}, function(err) {
         if (err) {
             return res.status(422).send({error: 'There was an error finding the group.'})
-        } else {
+        } else {*/
             var group = new Group({
                 groupName: groupName,
                 members: members,
@@ -87,8 +87,8 @@ export const createGroup = (req: Request, res: Response, next: NextFunction) => 
                     group: groupInfo
                 });
             });
-        }
-    })
+        /*}
+    })*/
     /**
      * 
     
