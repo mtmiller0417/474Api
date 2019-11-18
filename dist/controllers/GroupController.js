@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const group_1 = __importDefault(require("../models/group"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config/config");
 // Used for bcrypt
@@ -16,45 +17,83 @@ function generateToken(group) {
 // Get all groups
 exports.allGroups = (req, res) => {
     console.log('\nTrying to get all groups');
+    const groups = group_1.default.find((err, group) => {
+        if (err) {
+            res.send(err);
+        }
+        else {
+            console.log(group);
+            res.send(group);
+        }
+    });
 };
 // Gets a specific group
 exports.showGroup = (req, res) => {
     console.log('\nTrying to get a specific group');
+    group_1.default.findOne({ _id: req.body.id }, function (err, group) {
+        if (err) {
+            return res.status(400).json({ error: 'bad data 0' });
+        }
+        if (!group) {
+            return res.status(400).json({ error: 'Your group info cannot be verified. Please try again.' });
+        }
+        else {
+            console.log('Here is the specific group that you are looking for.');
+            let groupInfo = group.toJson();
+            res.status(200).json({
+                group: groupInfo
+            });
+        }
+    });
 };
 // POSTs
 // Creates a new group, adds the user who created it as first member
 exports.createGroup = (req, res, next) => {
     console.log('\nTrying to create a group');
     console.log(req.body);
+    var groupName = req.body.groupName;
+    var members = req.body.members;
+    var messages = req.body.messages;
+    var events = req.body.events;
+    if (!groupName) {
+        return res.status(422).send({ error: 'You must enter a group name.' });
+    }
+    // Check if there's at least one member
+    if (!members) {
+        return res.status(422).send({ error: 'You must have at least one member in a group.' });
+    }
+    group_1.default.findOne({ groupName: groupName }, function (err) {
+        if (err) {
+            return res.status(422).send({ error: 'There was an error finding the group.' });
+        }
+        else {
+            var group = new group_1.default({
+                groupName: groupName,
+                members: members,
+                messages: messages,
+                events: events
+            });
+            group.save(function (err, group) {
+                if (err) {
+                    return (err);
+                }
+                let groupInfo = group.toJSON();
+                res.status(201).json({
+                    group: groupInfo
+                });
+            });
+        }
+    });
     /**
      *
-    "groupName": "MattsGroup",
-    "members":["mtmiller"],
-     "messgaes": [{
-        "text": "Hi there",
-        "time_sent": "now",
-        "senderUsername":"mtmiller"
-    },{
-        "text": "second message",
-        "time_sent": "later",
-        "senderUsername":"mtmiller"
-    }],
-    "events": [{
-        "title": "MattsEvent",
-        "description": "An event",
-        "dateOfEvent": "now",
-        "locationName":  "My house",
-        "locationAddress": "My house",
-        "username": "mtmiller",
-        "time": "now"
-    }]
+    
      */
 };
 // Creates a new message for a specific group
 exports.createMessage = (req, res) => {
     console.log('\nTrying to create a message');
 };
-// Creates a new evnent for a specific group
+// Creates a new event for a specific group
 exports.createEvent = (req, res) => {
     console.log('\nTrying to create an event');
 };
@@ -72,6 +111,14 @@ exports.editEvent = (req, res) => {
 // Deletes a specific group
 exports.deleteGroup = (req, res) => {
     console.log('\nTrying to delete a specific group');
+    const group = group_1.default.deleteOne({ _id: req.body.id }, (err) => {
+        if (err) {
+            res.send(err);
+        }
+        else {
+            res.send("Group deleted from database");
+        }
+    });
 };
 // Deletes a specific event
 exports.deleteEvent = (req, res) => {
