@@ -26,28 +26,13 @@ exports.showGroup = (req, res) => {
 exports.createGroup = (req, res, next) => {
     console.log('\nTrying to create a group');
     console.log(req.body);
+    var groupName = req.body.groupName;
+    var members = req.body.members;
+    var messages = req.body.messages;
+    var events = req.body.events;
     /**
      *
-    "groupName": "MattsGroup",
-    "members":["mtmiller"],
-     "messgaes": [{
-        "text": "Hi there",
-        "time_sent": "now",
-        "senderUsername":"mtmiller"
-    },{
-        "text": "second message",
-        "time_sent": "later",
-        "senderUsername":"mtmiller"
-    }],
-    "events": [{
-        "title": "MattsEvent",
-        "description": "An event",
-        "dateOfEvent": "now",
-        "locationName":  "My house",
-        "locationAddress": "My house",
-        "username": "mtmiller",
-        "time": "now"
-    }]
+    
      */
 };
 // Creates a new message for a specific group

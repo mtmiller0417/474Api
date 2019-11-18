@@ -110,7 +110,7 @@ exports.addUser = (req, res, next) => {
                 }
                 let userInfo = user.toJSON();
                 res.status(201).json({
-                    token: 'JWT ' + generateToken(userInfo),
+                    token: 'Bearer ' + generateToken(userInfo),
                     user: userInfo
                 });
             });

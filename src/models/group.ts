@@ -60,5 +60,5 @@ GroupSchema.methods.toJson = function () {
     }
   }
 
-const User = mongoose.model<GroupInterface>("User", GroupSchema);
-export default User;
+const Group = mongoose.model<GroupInterface>("Group", GroupSchema);
+export default Group;

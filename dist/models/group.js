@@ -47,6 +47,6 @@ GroupSchema.methods.toJson = function () {
         events: this.events
     };
 };
-const User = mongoose_1.default.model("User", GroupSchema);
-exports.default = User;
+const Group = mongoose_1.default.model("Group", GroupSchema);
+exports.default = Group;
 //# sourceMappingURL=group.js.map

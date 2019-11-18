@@ -102,7 +102,7 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
                 if(err){ return (err); }
                 let userInfo = user.toJSON();
                 res.status(201).json({
-                    token: 'JWT ' + generateToken(userInfo),
+                    token: 'Bearer ' + generateToken(userInfo), // Use 'JWT' as header?
                     user: userInfo
                 });
             });
