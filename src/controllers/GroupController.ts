@@ -95,9 +95,32 @@ export const createGroup = (req: Request, res: Response, next: NextFunction) => 
      */
 }
 
-// Creates a new message for a specific group
+// Creates a new message for a specific group (Updating a group essentially)
 export const createMessage = (req: Request, res: Response) => {
-    console.log('\nTrying to create a message')
+    console.log('\nTrying to create a message for a specific group.');
+    Group.findOne({_id: req.body._id}, function(err: any, group: any) {
+        if (err) {
+            return res.status(400).json({error: 'bad data 0'});
+        }
+        if (!group) {
+            return res.status(400).json({error: 'Your group info could not be verified. Please try again.'});
+        }
+
+        var text:string = req.body.text;
+        var time_sent:string = req.body.time_sent;
+        var senderUsername:string = req.body.senderUsername; 
+
+        var new_message = {
+            text: text,
+            time_sent: time_sent,
+            senderUsername: senderUsername
+        }
+        
+        console.log(group.messages);
+        group.messages.push(new_message);
+        console.log(group.messages);
+        res.send('New message has been added to this group.');
+    });
 }
 
 // Creates a new event for a specific group
@@ -124,7 +147,7 @@ export const editEvent = (req: Request, res: Response) => {
 // Deletes a specific group
 export const deleteGroup = (req: Request, res: Response) => {
     console.log('\nTrying to delete a specific group')
-    const group = Group.deleteOne({_id: req.body.id}, (err: any) => {
+    const group = Group.deleteOne({_id: req.body._id}, (err: any) => {
         if (err) {
             res.send(err);
         } else {
