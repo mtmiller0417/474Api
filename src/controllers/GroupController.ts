@@ -119,7 +119,13 @@ export const createMessage = (req: Request, res: Response) => {
         console.log(group.messages);
         group.messages.push(new_message);
         console.log(group.messages);
-        res.send('New message has been added to this group.');
+        Group.updateOne({_id:req.body._id}, {messages: group.messages}, (err: any) => {
+            if(err){
+                res.send(err);
+            } else {
+                res.send('New message has been added to this group.');
+            }
+        });
     });
 }
 

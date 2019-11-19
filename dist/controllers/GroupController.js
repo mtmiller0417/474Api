@@ -108,7 +108,14 @@ exports.createMessage = (req, res) => {
         console.log(group.messages);
         group.messages.push(new_message);
         console.log(group.messages);
-        res.send('New message has been added to this group.');
+        group_1.default.updateOne({ _id: req.body._id }, { messages: group.messages }, (err) => {
+            if (err) {
+                res.send(err);
+            }
+            else {
+                res.send('New message has been added to this group.');
+            }
+        });
     });
 };
 // Creates a new event for a specific group
