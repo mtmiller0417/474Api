@@ -11,6 +11,10 @@ export interface UserInterface extends Document {
     profilePicture: String;
     bio: String;
     groupIDs: [String];
+    requests: [{
+      sender: String,
+      invitedGroupID: String
+    }]
 }
 
 const UserSchema: Schema = new Schema({
@@ -41,6 +45,13 @@ const UserSchema: Schema = new Schema({
     groupIDs:{
       type: [String],
       required: false
+    },
+    requests:{
+      type:{
+        sender: String,
+        invitedGroupID: String
+      },
+      required: false
     }
 });
 
@@ -61,7 +72,8 @@ UserSchema.methods.toJson = function () {
     lastName: this.lastName,
     profilePicture: this.profilePicture,
     bio: this.bio,
-    groupIDs: this.groupIDs
+    groupIDs: this.groupIDs,
+    requests: this.requests
   }
 }
 

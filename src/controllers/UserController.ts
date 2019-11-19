@@ -83,6 +83,7 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
     const profilePicture = req.body.profilePicture;
     const bio = req.body.bio;
     var groupIDs = req.body.groupIDs;
+    const requests = req.body.requests;
 
 
     // Check if ID is present
@@ -117,7 +118,8 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
                 lastName: lastName,
                 profilePicture: profilePicture,
                 bio: bio,
-                groupIDs: groupIDs
+                groupIDs: groupIDs,
+                requests: requests
             });
 
             user.save(function(err, user){
@@ -131,17 +133,6 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
         }
     })
 };
-
-/* Moved to passport.ts */
-/*const parseUserFromHeader = (authorization_header: string) => {
-    const start_pos = authorization_header.indexOf('.');
-    const end_pos = authorization_header.indexOf('.', start_pos+1);
-    // Get the substring of the base64 user
-    const str = authorization_header.substring(start_pos+1, end_pos);
-    // Convert the base64 to a string
-    var strJson = atob(str);
-    return JSON.parse(strJson);
-};*/
 
 // Update a user
 export const updateUser = async (req: Request, res: Response) => {
@@ -160,7 +151,8 @@ export const updateUser = async (req: Request, res: Response) => {
     var lastName:string = req.body.lastName;
     var profilePicture:string = req.body.profilePicture;
     var bio:string = req.body.bio;
-    var groupIDs:[number] = req.body.groupIDs;
+    var groupIDs:[string] = req.body.groupIDs;
+    var requests:[string] = req.body.requests;
 
     // Create the initial JSON
     var update = { 
@@ -170,7 +162,8 @@ export const updateUser = async (req: Request, res: Response) => {
         lastName: lastName,
         profilePicture: profilePicture,
         bio: bio,
-        groupIDs: groupIDs
+        groupIDs: groupIDs,
+        requests: requests
     }
     // Get rid of attributes
     if(!username){ delete update.username }
@@ -180,6 +173,7 @@ export const updateUser = async (req: Request, res: Response) => {
     if(!profilePicture){ delete update.profilePicture }
     if(!bio){ delete update.bio }
     if(!groupIDs){ delete update.groupIDs }
+    if(!requests){ delete update.requests }
 
     // If they're changing their password, make sure to ecrypt it
     if(password){ update.password = bcrypt.hashSync(password); console.log(password); }
