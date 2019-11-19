@@ -116,10 +116,10 @@ export const createMessage = (req: Request, res: Response) => {
             senderUsername: senderUsername
         }
         
-        console.log(group.messages);
+        //console.log(group.messages);
         group.messages.push(new_message);
-        console.log(group.messages);
-        Group.updateOne({_id:req.body._id}, {messages: group.messages}, (err: any) => {
+        //console.log(group.messages);
+        Group.updateOne({_id: req.body._id}, {messages: group.messages}, (err: any) => {
             if(err){
                 res.send(err);
             } else {
@@ -131,7 +131,44 @@ export const createMessage = (req: Request, res: Response) => {
 
 // Creates a new event for a specific group
 export const createEvent = (req: Request, res: Response) => {
-    console.log('\nTrying to create an event')
+    console.log('\nTrying to create a new event for a specific group.');
+    Group.findOne({_id: req.body._id}, function(err: any, group: any) {
+        if (err) {
+            return res.status(400).json({error: 'bad data 0'});
+        }
+        if (!group) {
+            return res.status(400).json({error: 'Your group info could not be verified. Please try again.'});
+        }
+
+        var title:string = req.body.title;
+        var description:string = req.body.description;
+        var dateOfEvent:string = req.body.dateOfEvent;
+        var locationName:string = req.body.locationName;
+        var locationAddress:string = req.body.locationAddress;
+        var username:string = req.body.username;
+        var time:string = req.body.time; 
+
+        var new_event = {
+            title: title,
+            description: description,
+            dateOfEvent: dateOfEvent,
+            locationName: locationName,
+            locationAddress: locationAddress,
+            username: username,
+            time: time
+        }
+        
+        //console.log(group.events);
+        group.events.push(new_event);
+        //console.log(group.events);
+        Group.updateOne({_id: req.body._id}, {events: group.events}, (err: any) => {
+            if(err){
+                res.send(err);
+            } else {
+                res.send('New event has been added to this group.');
+            }
+        });
+    });
 }
 
 // PUTs
@@ -145,7 +182,64 @@ export const editMessage = (req: Request, res: Response) => {
 
 // Edits an event to a specific groups eventList
 export const editEvent = (req: Request, res: Response) => {
-    console.log('\nTrying to edit a specific event')
+    console.log('\nTrying to edit a specific event');
+    //_id here supposed to be group id.
+    Group.findOne({_id: req.body._id}, function(err: any, group: any) {
+        if (err) {
+            return res.status(400).json({error: 'bad data 0'});
+        }
+        if (!group) {
+            return res.status(400).json({error: 'Your group info could not be verified. Please try again.'});
+        }
+
+        var title:string = req.body.title;
+        var description:string = req.body.description;
+        var dateOfEvent:string = req.body.dateOfEvent;
+        var locationName:string = req.body.locationName;
+        var locationAddress:string = req.body.locationAddress;
+        var username:string = req.body.username;
+        var time:string = req.body.time;
+
+        var update = {
+            title: title,
+            description: description,
+            dateOfEvent: dateOfEvent,
+            locationName: locationName,
+            locationAddress: locationAddress,
+            username: username,
+            time: time
+        }
+
+        if (!title) { delete update.title };
+        if (!description) { delete update.description };
+        if (!dateOfEvent) { delete update.dateOfEvent };
+        if (!locationName) { delete update.locationName };
+        if (!locationAddress) { delete update.locationAddress };
+        if (!username) { delete update.username };
+        if (!time) { delete update.time };
+
+        const eventList = group.events;
+        var index = -1;
+        for(var i = 0; i < eventList.length; i++) {
+            if (req.body.event_id.localeCompare(eventList[i]._id) == 0) {
+                console.log('Event found!');
+                index = i;
+                break;
+            }
+        }
+
+        group.events[index] = update;
+
+        Group.updateOne({_id: req.body._id}, {events: group.events}, (err: any) => {
+            if(err){
+                res.send(err);
+            } else {
+                res.send('The specific event has been updated.');
+            }
+        });
+
+
+    });
 }
 
 // DELETEs
