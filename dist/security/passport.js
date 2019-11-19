@@ -70,16 +70,12 @@ exports.compareHeaderUserID = (user_id, authorization_header) => {
 exports.checkUserInGroup = (group_id, authorization_header) => __awaiter(void 0, void 0, void 0, function* () {
     // Get the user_id from the token header
     const user_id = exports.parseUserFromHeader(authorization_header)._id;
-    //console.log("Header user_id: " + user_id)
     // Get the list of groups that the user belongs to
     const user = yield user_1.default.findById({ _id: user_id }); // Wait for this response
     if (user == null) { // User does not exist
         return false;
     }
-    //console.log(user)
     const user_group_ids = user.groupIDs;
-    //console.log(user_group_ids)
-    //console.log(group_id)
     // Return whether the passed in group_id is in the list the user belongs to
     if (!user_group_ids) {
         return false;

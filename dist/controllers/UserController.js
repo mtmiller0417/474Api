@@ -94,6 +94,7 @@ exports.addUser = (req, res, next) => {
     const profilePicture = req.body.profilePicture;
     const bio = req.body.bio;
     var groupIDs = req.body.groupIDs;
+    const requests = req.body.requests;
     // Check if ID is present
     if (!username) {
         return res.status(422).send({ error: 'No username passed to register against.' });
@@ -125,7 +126,8 @@ exports.addUser = (req, res, next) => {
                 lastName: lastName,
                 profilePicture: profilePicture,
                 bio: bio,
-                groupIDs: groupIDs
+                groupIDs: groupIDs,
+                requests: requests
             });
             user.save(function (err, user) {
                 if (err) {
@@ -140,16 +142,6 @@ exports.addUser = (req, res, next) => {
         }
     });
 };
-/* Moved to passport.ts */
-/*const parseUserFromHeader = (authorization_header: string) => {
-    const start_pos = authorization_header.indexOf('.');
-    const end_pos = authorization_header.indexOf('.', start_pos+1);
-    // Get the substring of the base64 user
-    const str = authorization_header.substring(start_pos+1, end_pos);
-    // Convert the base64 to a string
-    var strJson = atob(str);
-    return JSON.parse(strJson);
-};*/
 // Update a user
 exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("\nTrying to update a user");
@@ -165,6 +157,7 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     var profilePicture = req.body.profilePicture;
     var bio = req.body.bio;
     var groupIDs = req.body.groupIDs;
+    var requests = req.body.requests;
     // Create the initial JSON
     var update = {
         username: username,
@@ -173,7 +166,8 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         lastName: lastName,
         profilePicture: profilePicture,
         bio: bio,
-        groupIDs: groupIDs
+        groupIDs: groupIDs,
+        requests: requests
     };
     // Get rid of attributes
     if (!username) {
@@ -196,6 +190,9 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
     if (!groupIDs) {
         delete update.groupIDs;
+    }
+    if (!requests) {
+        delete update.requests;
     }
     // If they're changing their password, make sure to ecrypt it
     if (password) {

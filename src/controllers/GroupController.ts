@@ -135,17 +135,20 @@ export const editMessage = async (req: Request, res: Response) => {
 
     var index = -1;
     for(var i = 0; i < messageList.length; i++){
-        if(req.body.event_id.localeCompare(messageList[i]._id) == 0){
+        if(req.body.message_id.localeCompare(messageList[i]._id) == 0){
             console.log('Message found!');
             index = i;
             break;
         }
     }
-    if(index > 0){
-        messageList[index] = update;
+    if(index > -1){
+        //messageList[index] = update;
+        if(text){ messageList[index].text = update.text }
+        if(time_sent){ messageList[index].time_sent = update.time_sent }
+        if(senderUsername){ messageList[index].senderUsername = update.senderUsername }
     }
     // Update the according group to reflect the changes in events
-    await Group.updateOne({_id:req.body._id}, update, (err: any) => {
+    await Group.updateOne({_id:req.body._id}, {messages: messageList}, (err: any) => {
         if(err){
             res.send(err);
         } else {
@@ -194,6 +197,8 @@ export const editEvent = async (req: Request, res: Response) => {
     if(!username){ delete update.username }
     if(!time){ delete update.time }
 
+    console.log(update)
+
     var index = -1;
     for(var i = 0; i < eventList.length; i++){
         if(req.body.event_id.localeCompare(eventList[i]._id) == 0){
@@ -202,11 +207,18 @@ export const editEvent = async (req: Request, res: Response) => {
             break;
         }
     }
-    if(index > 0){
-        eventList[index] = update;
+    console.log(index)
+    if(index > -1){
+        if(title){ eventList[index].title = update.title }
+        if(description){ eventList[index].description = update.description }
+        if(dateOfEvent){ eventList[index].dateOfEvent = update.dateOfEvent }
+        if(locationName){ eventList[index].locationName = update.locationName }
+        if(locationAddress){ eventList[index].locationAddress = update.locationAddress }
+        if(username){ eventList[index].username = update.username }
+        if(time){ eventList[index].time = update.time }
     }
     // Update the according group to reflect the changes in events
-    await Group.updateOne({_id:req.body._id}, update, (err: any) => {
+    await Group.updateOne({_id:req.body._id}, {events: eventList }, (err: any) => {
         if(err){
             res.send(err);
         } else {

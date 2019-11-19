@@ -40,6 +40,13 @@ const UserSchema = new mongoose_1.Schema({
     groupIDs: {
         type: [String],
         required: false
+    },
+    requests: {
+        type: {
+            sender: String,
+            invitedGroupID: String
+        },
+        required: false
     }
 });
 UserSchema.methods.comparePassword = function (candidatePassword, cb) {
@@ -64,7 +71,8 @@ UserSchema.methods.toJson = function () {
         lastName: this.lastName,
         profilePicture: this.profilePicture,
         bio: this.bio,
-        groupIDs: this.groupIDs
+        groupIDs: this.groupIDs,
+        requests: this.requests
     };
 };
 const User = mongoose_1.default.model("User", UserSchema);
