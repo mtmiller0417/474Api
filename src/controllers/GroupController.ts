@@ -111,7 +111,47 @@ export const editMessage = async (req: Request, res: Response) => {
     // Takes in group_id and message
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
     if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
-    // Rest of code here
+
+    // Get the group the user is trying to edit
+    const group:any = await Group.findById({_id: req.body._id}); // Wait for the call to come back
+    if(!group){ return res.status(422).send({error: 'User not found'}) }
+    const messageList = group.messages;
+
+    var text: String = req.body.text;
+    var time_sent: String = req.body.time_sent;
+    var senderUsername: String = req.body.senderUsername;
+
+    // Create an initial JSON
+    var update = {
+        text: text,
+        time_sent: time_sent,
+        senderUsername: senderUsername,
+    }
+
+    // Get rid of attributes that weren't passed in
+    if(!text){ delete update.text }
+    if(!time_sent){ delete update.time_sent }
+    if(!senderUsername){ delete update.senderUsername }
+
+    var index = -1;
+    for(var i = 0; i < messageList.length; i++){
+        if(req.body.event_id.localeCompare(messageList[i]._id) == 0){
+            console.log('Message found!');
+            index = i;
+            break;
+        }
+    }
+    if(index > 0){
+        messageList[index] = update;
+    }
+    // Update the according group to reflect the changes in events
+    await Group.updateOne({_id:req.body._id}, update, (err: any) => {
+        if(err){
+            res.send(err);
+        } else {
+            res.send('Group message has been updated')
+        }
+    });
 }
 
 // Edits an event to a specific groups eventList
@@ -120,7 +160,59 @@ export const editEvent = async (req: Request, res: Response) => {
     // Takes in group_id and message
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
     if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
-    // Rest of code here
+
+    // Get the group the user is trying to edit
+    const group:any = await Group.findById({_id: req.body._id}); // Wait for the call to come back
+    if(!group){ return res.status(422).send({error: 'User not found'}) }
+    const eventList = group.events;
+
+    var title: String = req.body.title;
+    var description: String = req.body.description;
+    var dateOfEvent: String = req.body.dateOfEvent;
+    var locationName: String = req.body.locationName;
+    var locationAddress: String = req.body.locationAddress;
+    var username: String = req.body.username;
+    var time: String = req.body.time;
+
+    // Create an initial JSON
+    var update = {
+        title: title,
+        description: description,
+        dateOfEvent: dateOfEvent,
+        locationName: locationName,
+        locationAddress: locationAddress,
+        username: username,
+        time: time
+    }
+
+    // Get rid of attributes that weren't passed in
+    if(!title){ delete update.title }
+    if(!description){ delete update.description }
+    if(!dateOfEvent){ delete update.dateOfEvent }
+    if(!locationName){ delete update.locationName }
+    if(!locationAddress){ delete update.locationAddress }
+    if(!username){ delete update.username }
+    if(!time){ delete update.time }
+
+    var index = -1;
+    for(var i = 0; i < eventList.length; i++){
+        if(req.body.event_id.localeCompare(eventList[i]._id) == 0){
+            console.log('Event found!');
+            index = i;
+            break;
+        }
+    }
+    if(index > 0){
+        eventList[index] = update;
+    }
+    // Update the according group to reflect the changes in events
+    await Group.updateOne({_id:req.body._id}, update, (err: any) => {
+        if(err){
+            res.send(err);
+        } else {
+            res.send('Group event has been updated')
+        }
+    });
 }
 
 // DELETEs
