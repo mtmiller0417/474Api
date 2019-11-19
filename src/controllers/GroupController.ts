@@ -88,10 +88,7 @@ export const createMessage = async (req: Request, res: Response) => {
     // Takes in group_id and message
     console.log('\nTrying to create a message')
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
-    if(!bool){
-        // The user is part of the group theyre t2rying to access
-        return res.status(422).send({error: 'User does not belongs to the group'})
-    } 
+    if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
     // Rest of code here
 }
 
@@ -100,10 +97,7 @@ export const createEvent = async (req: Request, res: Response) => {
     console.log('\nTrying to create an event')
     // Takes in group_id and message
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
-    if(!bool){
-        // The user is part of the group theyre t2rying to access
-        return res.status(422).send({error: 'User does not belongs to the group'})
-    } 
+    if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
     // Rest of code here
 }
 
@@ -116,10 +110,7 @@ export const editMessage = async (req: Request, res: Response) => {
     console.log('\nTrying to edit a specific message')
     // Takes in group_id and message
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
-    if(!bool){
-        // The user is part of the group theyre t2rying to access
-        return res.status(422).send({error: 'User does not belongs to the group'})
-    } 
+    if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
     // Rest of code here
 }
 
@@ -128,10 +119,7 @@ export const editEvent = async (req: Request, res: Response) => {
     console.log('\nTrying to edit a specific event')
     // Takes in group_id and message
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
-    if(!bool){
-        // The user is part of the group theyre t2rying to access
-        return res.status(422).send({error: 'User does not belongs to the group'})
-    } 
+    if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
     // Rest of code here
 }
 
@@ -142,10 +130,7 @@ export const deleteGroup = async (req: Request, res: Response) => {
     console.log('\nTrying to delete a specific group')
     // Takes in group_id and message
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
-    if(!bool){
-        // The user is part of the group theyre t2rying to access
-        return res.status(422).send({error: 'User does not belongs to the group'})
-    } 
+    if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
     // Rest of code here
 
     const group = Group.deleteOne({_id: req.body._id}, (err: any) => {
