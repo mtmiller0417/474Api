@@ -10,7 +10,7 @@ export interface UserInterface extends Document {
     lastName: String;
     profilePicture: String;
     bio: String;
-    groupIDs: [Number];
+    groupIDs: [String];
 }
 
 const UserSchema: Schema = new Schema({
@@ -39,7 +39,7 @@ const UserSchema: Schema = new Schema({
       required: false
     },
     groupIDs:{
-      type: [Number],
+      type: [String],
       required: false
     }
 });

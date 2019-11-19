@@ -1,6 +1,7 @@
 // Import statements
 import { Request, Response } from "express";
 import Group from "../models/group";
+import User from "../models/user";
 import jwt from 'jsonwebtoken'
 import { secret } from '../config/config'
 import { NextFunction } from "connect";
@@ -8,6 +9,8 @@ import bcrypt from 'bcrypt-nodejs';
 
 import { parseUserFromHeader } from '../security/passport'
 import { compareHeaderUserID } from '../security/passport'
+import { checkUserInGroup } from '../security/passport'
+
 
 // GETs
 
@@ -81,15 +84,27 @@ export const createGroup = (req: Request, res: Response, next: NextFunction) => 
 }
 
 // Creates a new message for a specific group
-export const createMessage = (req: Request, res: Response) => {
+export const createMessage = async (req: Request, res: Response) => {
     // Takes in group_id and message
     console.log('\nTrying to create a message')
-    // get groups with await
+    const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
+    if(!bool){
+        // The user is part of the group theyre t2rying to access
+        return res.status(422).send({error: 'User does not belongs to the group'})
+    } 
+    // Rest of code here
 }
 
 // Creates a new event for a specific group
-export const createEvent = (req: Request, res: Response) => {
+export const createEvent = async (req: Request, res: Response) => {
     console.log('\nTrying to create an event')
+    // Takes in group_id and message
+    const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
+    if(!bool){
+        // The user is part of the group theyre t2rying to access
+        return res.status(422).send({error: 'User does not belongs to the group'})
+    } 
+    // Rest of code here
 }
 
 // PUTs
@@ -97,20 +112,42 @@ export const createEvent = (req: Request, res: Response) => {
 // May need to add some unique identifier for evens and messages
 
 // Edits a message to a specific groups messages
-export const editMessage = (req: Request, res: Response) => {
+export const editMessage = async (req: Request, res: Response) => {
     console.log('\nTrying to edit a specific message')
+    // Takes in group_id and message
+    const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
+    if(!bool){
+        // The user is part of the group theyre t2rying to access
+        return res.status(422).send({error: 'User does not belongs to the group'})
+    } 
+    // Rest of code here
 }
 
 // Edits an event to a specific groups eventList
-export const editEvent = (req: Request, res: Response) => {
+export const editEvent = async (req: Request, res: Response) => {
     console.log('\nTrying to edit a specific event')
+    // Takes in group_id and message
+    const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
+    if(!bool){
+        // The user is part of the group theyre t2rying to access
+        return res.status(422).send({error: 'User does not belongs to the group'})
+    } 
+    // Rest of code here
 }
 
 // DELETEs
 
 // Deletes a specific group
-export const deleteGroup = (req: Request, res: Response) => {
+export const deleteGroup = async (req: Request, res: Response) => {
     console.log('\nTrying to delete a specific group')
+    // Takes in group_id and message
+    const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
+    if(!bool){
+        // The user is part of the group theyre t2rying to access
+        return res.status(422).send({error: 'User does not belongs to the group'})
+    } 
+    // Rest of code here
+
     const group = Group.deleteOne({_id: req.body._id}, (err: any) => {
         if (err) {
             res.send(err);
@@ -120,7 +157,51 @@ export const deleteGroup = (req: Request, res: Response) => {
     });
 };
 
-// Deletes a specific event
-export const deleteEvent = (req: Request, res: Response) => {
+// Deletes a specific event for a specific group
+export const deleteEvent = async (req: Request, res: Response) => {
     console.log('\nTrying to delete a specific event')
+    
+    // Takes in group_id and message
+    const bool = await checkUserInGroup(req.body._id, req.headers.authorization);
+    if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
+
+    // Get the group the user is trying to edit
+    const group:any = await Group.findById({_id: req.body._id}); // Wait for the call to come back
+    if(!group){ return res.status(422).send({error: 'User not found'}) }
+    const eventList = group.events;
+
+    // Find the index of the event to remove
+    var index = -1;
+    for(var i = 0; i < eventList.length; i++){
+        if(req.body.event_id.localeCompare(eventList[i]._id) == 0){
+            console.log('Event found!');
+            index = i;
+            break;
+        }
+    }
+
+    // Remove the event with splice
+    eventList.splice(index, 1);
+    console.log(eventList)
+
+    // Update the according group to reflect the changes in events
+    await Group.updateOne({_id:req.body._id}, {events: eventList}, (err: any) => {
+        if(err){
+            res.send(err);
+        } else {
+            res.send('Group event has been updated(deleted)')
+        }
+    });
+}
+
+// Actually deletes the first user in the database...
+export const deleteAllGroups = (req: Request, res: Response) => {
+    console.log("\nTrying to delete all users")
+    const users = Group.deleteOne((err: any, group: any) => {
+        if(err){
+            res.send(err);
+        } else {
+            res.send(group)
+        }
+    });
 }

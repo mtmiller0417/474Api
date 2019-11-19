@@ -36,6 +36,10 @@ const GroupSchema = new mongoose_1.Schema({
                 time: String
             }],
         required: false
+    },
+    groupImage: {
+        type: String,
+        required: false
     }
 });
 GroupSchema.methods.toJson = function () {
@@ -44,7 +48,8 @@ GroupSchema.methods.toJson = function () {
         groupName: this.groupName,
         members: this.members,
         messages: this.messages,
-        events: this.events
+        events: this.events,
+        groupImage: this.groupImage
     };
 };
 const Group = mongoose_1.default.model("Group", GroupSchema);

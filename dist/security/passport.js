@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -46,11 +55,37 @@ exports.parseUserFromHeader = (authorization_header) => {
 exports.compareHeaderUserID = (user_id, authorization_header) => {
     const jsonHeader = exports.parseUserFromHeader(authorization_header);
     var header_id = jsonHeader._id;
-    if (user_id == header_id) {
+    //console.log("user_id  : " + user_id)
+    //console.log("header_id: " + header_id)
+    // compares strings, 0 if equal, not otherwise
+    const val = user_id.localeCompare(header_id);
+    //console.log(val)
+    if (val == 0) {
         return true;
     }
     else {
         return false;
     }
 };
+exports.checkUserInGroup = (group_id, authorization_header) => __awaiter(void 0, void 0, void 0, function* () {
+    // Get the user_id from the token header
+    const user_id = exports.parseUserFromHeader(authorization_header)._id;
+    //console.log("Header user_id: " + user_id)
+    // Get the list of groups that the user belongs to
+    const user = yield user_1.default.findById({ _id: user_id }); // Wait for this response
+    if (user == null) { // User does not exist
+        return false;
+    }
+    //console.log(user)
+    const user_group_ids = user.groupIDs;
+    //console.log(user_group_ids)
+    //console.log(group_id)
+    // Return whether the passed in group_id is in the list the user belongs to
+    if (!user_group_ids) {
+        return false;
+    }
+    else {
+        return user_group_ids.includes(group_id);
+    }
+});
 //# sourceMappingURL=passport.js.map

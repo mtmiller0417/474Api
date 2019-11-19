@@ -57,6 +57,7 @@ userRoutes.delete("/user_id", UserController.deleteUser); // This function may n
 userRoutes.delete("/", UserController.deleteAll);
 groupRoutes.delete("/group_id", GroupController.deleteGroup);
 groupRoutes.delete("/event", GroupController.deleteEvent);
+groupRoutes.delete("/", GroupController.deleteAllGroups);
 app.listen(port, () => {
     console.log(`Server running on ${port}`);
 });

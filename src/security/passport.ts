@@ -45,11 +45,39 @@ export const parseUserFromHeader = (authorization_header: any) => {
 export const compareHeaderUserID = (user_id:any, authorization_header:any) => {
     const jsonHeader = parseUserFromHeader(authorization_header);
     var header_id = jsonHeader._id;
+
+    //console.log("user_id  : " + user_id)
+    //console.log("header_id: " + header_id)
+
+    // compares strings, 0 if equal, not otherwise
+    const val = user_id.localeCompare(header_id) 
+    //console.log(val)
     
-    if(user_id == header_id){
+    if(val == 0){
         return true;
     } else {
         return false;
     }
+};
 
+export const checkUserInGroup = async (group_id: any, authorization_header:any) => {
+
+    // Get the user_id from the token header
+    const user_id = parseUserFromHeader(authorization_header)._id;
+
+    // Get the list of groups that the user belongs to
+    const user: any = await User.findById({_id:user_id}); // Wait for this response
+    if(user == null){ // User does not exist
+        return false;
+    }
+
+    const user_group_ids: [any] = user.groupIDs;
+
+    // Return whether the passed in group_id is in the list the user belongs to
+    if(!user_group_ids){
+        return false;
+    }
+    else{
+        return user_group_ids.includes(group_id);
+    }
 };

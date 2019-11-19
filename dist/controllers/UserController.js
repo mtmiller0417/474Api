@@ -42,11 +42,7 @@ exports.allUsers = (req, res) => {
 };
 // Gets all the groupsIDs for a specific user
 exports.getGroupIDs = (req, res) => {
-    // Pass token in the header and user_id in the body 
-    // Check if the user is accessing their own data
-    /*if(compareHeaderUserID(req.body._id, req.headers.authorization)){
-        return res.status(422).send({ error: 'You attempted to access data that is not yours' });
-    }*/
+    // Pass token in the header
     const userjson = passport_1.parseUserFromHeader(req.headers.authorization);
     user_1.default.findOne({ _id: userjson._id }, function (err, user) {
         if (err) {
@@ -114,7 +110,6 @@ exports.addUser = (req, res, next) => {
     }
     let hash = bcrypt_nodejs_1.default.hashSync(password); // Use hashSync with default saltRounds
     user_1.default.findOne({ username: username }, function (err, existingUser) {
-        //if (err) { return next(err); }
         if (err) {
             return res.status(422).send({ error: 'There was an error finding user :(' });
         }
@@ -159,9 +154,10 @@ exports.addUser = (req, res, next) => {
 exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("\nTrying to update a user");
     // Check if the user is accessing their own data
-    if (passport_2.compareHeaderUserID(req.body._id, req.headers.authorization)) {
+    if (!passport_2.compareHeaderUserID(req.body._id, req.headers.authorization)) {
         return res.status(422).send({ error: 'You attempted to access data that is not yours' });
     }
+    const headerJSON = passport_1.parseUserFromHeader(req.headers.authorization);
     var username = req.body.username;
     var password = req.body.password;
     var firstName = req.body.firstName;
@@ -207,7 +203,7 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         console.log(password);
     }
     //const user = await User.findById({_id:req.body._id}); // Wait for this response
-    yield user_1.default.updateOne({ _id: req.body._id }, update, (err) => {
+    yield user_1.default.updateOne({ _id: headerJSON._id }, update, (err) => {
         if (err) {
             res.send(err);
         }
@@ -235,7 +231,6 @@ exports.deleteAll = (req, res) => {
             res.send(err);
         }
         else {
-            //console.log(user)
             res.send(user);
         }
     });

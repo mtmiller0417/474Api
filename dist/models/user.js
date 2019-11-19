@@ -38,7 +38,7 @@ const UserSchema = new mongoose_1.Schema({
         required: false
     },
     groupIDs: {
-        type: [Number],
+        type: [String],
         required: false
     }
 });
