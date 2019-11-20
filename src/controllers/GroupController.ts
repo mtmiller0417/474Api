@@ -83,22 +83,86 @@ export const createGroup = (req: Request, res: Response, next: NextFunction) => 
     });
 }
 
-// Creates a new message for a specific group
-export const createMessage = async (req: Request, res: Response) => {
-    // Takes in group_id and message
-    console.log('\nTrying to create a message')
+// Creates a new message for a specific group (Updating a group essentially)
+export const createMessage = (req: Request, res: Response) => {
+    console.log('\nTrying to create a message for a specific group.');
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
     if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
-    // Rest of code here
+    Group.findOne({_id: req.body._id}, function(err: any, group: any) {
+        if (err) {
+            return res.status(400).json({error: 'bad data 0'});
+        }
+        if (!group) {
+            return res.status(400).json({error: 'Your group info could not be verified. Please try again.'});
+        }
+
+        var text:string = req.body.text;
+        var time_sent:string = req.body.time_sent;
+        var senderUsername:string = req.body.senderUsername; 
+
+        var new_message = {
+            text: text,
+            time_sent: time_sent,
+            senderUsername: senderUsername
+        }
+        
+        //console.log(group.messages);
+        group.messages.push(new_message);
+        //console.log(group.messages);
+        Group.updateOne({_id: req.body._id}, {messages: group.messages}, (err: any) => {
+            if(err){
+                res.send(err);
+            } else {
+                res.send('New message has been added to this group.');
+            }
+        });
+    });
 }
 
 // Creates a new event for a specific group
-export const createEvent = async (req: Request, res: Response) => {
-    console.log('\nTrying to create an event')
-    // Takes in group_id and message
+export const createEvent = (req: Request, res: Response) => {
+    console.log('\nTrying to create a new event for a specific group.');
+
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
     if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
-    // Rest of code here
+
+    Group.findOne({_id: req.body._id}, function(err: any, group: any) {
+        if (err) {
+            return res.status(400).json({error: 'bad data 0'});
+        }
+        if (!group) {
+            return res.status(400).json({error: 'Your group info could not be verified. Please try again.'});
+        }
+
+        var title:string = req.body.title;
+        var description:string = req.body.description;
+        var dateOfEvent:string = req.body.dateOfEvent;
+        var locationName:string = req.body.locationName;
+        var locationAddress:string = req.body.locationAddress;
+        var username:string = req.body.username;
+        var time:string = req.body.time; 
+
+        var new_event = {
+            title: title,
+            description: description,
+            dateOfEvent: dateOfEvent,
+            locationName: locationName,
+            locationAddress: locationAddress,
+            username: username,
+            time: time
+        }
+        
+        //console.log(group.events);
+        group.events.push(new_event);
+        //console.log(group.events);
+        Group.updateOne({_id: req.body._id}, {events: group.events}, (err: any) => {
+            if(err){
+                res.send(err);
+            } else {
+                res.send('New event has been added to this group.');
+            }
+        });
+    });
 }
 
 // PUTs
@@ -232,10 +296,9 @@ export const editEvent = async (req: Request, res: Response) => {
 // Deletes a specific group
 export const deleteGroup = async (req: Request, res: Response) => {
     console.log('\nTrying to delete a specific group')
-    // Takes in group_id and message
+
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
     if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
-    // Rest of code here
 
     const group = Group.deleteOne({_id: req.body._id}, (err: any) => {
         if (err) {
