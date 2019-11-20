@@ -84,7 +84,7 @@ export const createGroup = (req: Request, res: Response, next: NextFunction) => 
 }
 
 // Creates a new message for a specific group (Updating a group essentially)
-export const createMessage = (req: Request, res: Response) => {
+export const createMessage = async (req: Request, res: Response) => {
     console.log('\nTrying to create a message for a specific group.');
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
     if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
@@ -120,7 +120,7 @@ export const createMessage = (req: Request, res: Response) => {
 }
 
 // Creates a new event for a specific group
-export const createEvent = (req: Request, res: Response) => {
+export const createEvent = async (req: Request, res: Response) => {
     console.log('\nTrying to create a new event for a specific group.');
 
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);

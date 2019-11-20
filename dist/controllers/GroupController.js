@@ -81,31 +81,13 @@ exports.createGroup = (req, res, next) => {
         });
     });
 };
-<<<<<<< HEAD
-// Creates a new message for a specific group
-exports.createMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // Takes in group_id and message
-    console.log('\nTrying to create a message');
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
-    if (!bool) {
-        return res.status(422).send({ error: 'User does not belongs to the group' });
-    }
-    // Rest of code here
-});
-// Creates a new event for a specific group
-exports.createEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('\nTrying to create an event');
-    // Takes in group_id and message
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
-    if (!bool) {
-        return res.status(422).send({ error: 'User does not belongs to the group' });
-    }
-    // Rest of code here
-});
-=======
 // Creates a new message for a specific group (Updating a group essentially)
-exports.createMessage = (req, res) => {
+exports.createMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to create a message for a specific group.');
+    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    if (!bool) {
+        return res.status(422).send({ error: 'User does not belongs to the group' });
+    }
     group_1.default.findOne({ _id: req.body._id }, function (err, group) {
         if (err) {
             return res.status(400).json({ error: 'bad data 0' });
@@ -133,10 +115,14 @@ exports.createMessage = (req, res) => {
             }
         });
     });
-};
+});
 // Creates a new event for a specific group
-exports.createEvent = (req, res) => {
+exports.createEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to create a new event for a specific group.');
+    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    if (!bool) {
+        return res.status(422).send({ error: 'User does not belongs to the group' });
+    }
     group_1.default.findOne({ _id: req.body._id }, function (err, group) {
         if (err) {
             return res.status(400).json({ error: 'bad data 0' });
@@ -172,8 +158,7 @@ exports.createEvent = (req, res) => {
             }
         });
     });
-};
->>>>>>> mikesParts
+});
 // PUTs
 // May need to add some unique identifier for evens and messages
 // Edits a message to a specific groups messages
@@ -242,7 +227,6 @@ exports.editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 // Edits an event to a specific groups eventList
 exports.editEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to edit a specific event');
-<<<<<<< HEAD
     // Takes in group_id and message
     const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
@@ -336,93 +320,14 @@ exports.editEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     });
 });
-=======
-    //_id here supposed to be group id.
-    group_1.default.findOne({ _id: req.body._id }, function (err, group) {
-        if (err) {
-            return res.status(400).json({ error: 'bad data 0' });
-        }
-        if (!group) {
-            return res.status(400).json({ error: 'Your group info could not be verified. Please try again.' });
-        }
-        var title = req.body.title;
-        var description = req.body.description;
-        var dateOfEvent = req.body.dateOfEvent;
-        var locationName = req.body.locationName;
-        var locationAddress = req.body.locationAddress;
-        var username = req.body.username;
-        var time = req.body.time;
-        var update = {
-            title: title,
-            description: description,
-            dateOfEvent: dateOfEvent,
-            locationName: locationName,
-            locationAddress: locationAddress,
-            username: username,
-            time: time
-        };
-        if (!title) {
-            delete update.title;
-        }
-        ;
-        if (!description) {
-            delete update.description;
-        }
-        ;
-        if (!dateOfEvent) {
-            delete update.dateOfEvent;
-        }
-        ;
-        if (!locationName) {
-            delete update.locationName;
-        }
-        ;
-        if (!locationAddress) {
-            delete update.locationAddress;
-        }
-        ;
-        if (!username) {
-            delete update.username;
-        }
-        ;
-        if (!time) {
-            delete update.time;
-        }
-        ;
-        const eventList = group.events;
-        var index = -1;
-        for (var i = 0; i < eventList.length; i++) {
-            if (req.body.event_id.localeCompare(eventList[i]._id) == 0) {
-                console.log('Event found!');
-                index = i;
-                break;
-            }
-        }
-        group.events[index] = update;
-        group_1.default.updateOne({ _id: req.body._id }, { events: group.events }, (err) => {
-            if (err) {
-                res.send(err);
-            }
-            else {
-                res.send('The specific event has been updated.');
-            }
-        });
-    });
-};
->>>>>>> mikesParts
 // DELETEs
 // Deletes a specific group
 exports.deleteGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to delete a specific group');
-<<<<<<< HEAD
-    // Takes in group_id and message
     const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }
-    // Rest of code here
-=======
->>>>>>> mikesParts
     const group = group_1.default.deleteOne({ _id: req.body._id }, (err) => {
         if (err) {
             res.send(err);
