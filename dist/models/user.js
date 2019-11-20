@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const bcrypt_nodejs_1 = __importDefault(require("bcrypt-nodejs"));
 const UserSchema = new mongoose_1.Schema({
-    userName: {
+    username: {
         type: String,
         reqiured: true
     },
@@ -28,6 +28,25 @@ const UserSchema = new mongoose_1.Schema({
     lastName: {
         type: String,
         required: true
+    },
+    profilePicture: {
+        type: String,
+        required: false
+    },
+    bio: {
+        type: String,
+        required: false
+    },
+    groupIDs: {
+        type: [String],
+        required: false
+    },
+    requests: {
+        type: {
+            sender: String,
+            invitedGroupID: String
+        },
+        required: false
     }
 });
 UserSchema.methods.comparePassword = function (candidatePassword, cb) {
@@ -46,10 +65,14 @@ UserSchema.methods.comparePassword = function (candidatePassword, cb) {
 UserSchema.methods.toJson = function () {
     return {
         _id: this._id,
-        userName: this.userName,
+        username: this.username,
         password: this.password,
         firstName: this.firstName,
         lastName: this.lastName,
+        profilePicture: this.profilePicture,
+        bio: this.bio,
+        groupIDs: this.groupIDs,
+        requests: this.requests
     };
 };
 const User = mongoose_1.default.model("User", UserSchema);
