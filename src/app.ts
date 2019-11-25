@@ -40,7 +40,7 @@ groupRoutes.use(bodyParser.urlencoded({ extended: true }));
 
 // GET
 userRoutes.get("/", UserController.allUsers); 
-userRoutes.get("/user_id", requireAuth, UserController.showUser);
+userRoutes.get("/user_id", UserController.showUser);
 userRoutes.get("/group_id", requireAuth, UserController.getGroupIDs);
 groupRoutes.get("/", GroupController.allGroups);
 groupRoutes.get("/group_id", requireAuth, GroupController.showGroup);
@@ -54,6 +54,7 @@ groupRoutes.post("/events", requireAuth, GroupController.createEvent);
 
 // PUT
 userRoutes.put("/user_id", requireAuth, UserController.updateUser);
+groupRoutes.put("/", requireAuth, GroupController.editGroup);
 groupRoutes.put("/message", requireAuth, GroupController.editMessage);
 groupRoutes.put("/event", requireAuth, GroupController.editEvent);
 

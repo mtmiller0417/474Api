@@ -39,24 +39,25 @@ groupRoutes.use(body_parser_1.default.json());
 groupRoutes.use(body_parser_1.default.urlencoded({ extended: true }));
 // GET
 userRoutes.get("/", UserController.allUsers);
-userRoutes.get("/user_id", passport_1.requireAuth, UserController.showUser);
+userRoutes.get("/user_id", UserController.showUser);
 userRoutes.get("/group_id", passport_1.requireAuth, UserController.getGroupIDs);
 groupRoutes.get("/", GroupController.allGroups);
-groupRoutes.get("/group_id", GroupController.showGroup);
+groupRoutes.get("/group_id", passport_1.requireAuth, GroupController.showGroup);
 // POST
 userRoutes.post("/", UserController.addUser);
-groupRoutes.post("/", GroupController.createGroup);
-groupRoutes.post("/messages", GroupController.createMessage);
-groupRoutes.post("/events", GroupController.createEvent);
+groupRoutes.post("/", passport_1.requireAuth, GroupController.createGroup);
+groupRoutes.post("/messages", passport_1.requireAuth, GroupController.createMessage);
+groupRoutes.post("/events", passport_1.requireAuth, GroupController.createEvent);
 // PUT
 userRoutes.put("/user_id", passport_1.requireAuth, UserController.updateUser);
-groupRoutes.put("/message", GroupController.editMessage);
-groupRoutes.put("/event", GroupController.editEvent);
+groupRoutes.put("/", passport_1.requireAuth, GroupController.editGroup);
+groupRoutes.put("/message", passport_1.requireAuth, GroupController.editMessage);
+groupRoutes.put("/event", passport_1.requireAuth, GroupController.editEvent);
 // DELETE
 userRoutes.delete("/user_id", UserController.deleteUser); // This function may need editing
 userRoutes.delete("/", UserController.deleteAll);
-groupRoutes.delete("/group_id", GroupController.deleteGroup);
-groupRoutes.delete("/event", GroupController.deleteEvent);
+groupRoutes.delete("/group_id", passport_1.requireAuth, GroupController.deleteGroup);
+groupRoutes.delete("/event", passport_1.requireAuth, GroupController.deleteEvent);
 groupRoutes.delete("/", GroupController.deleteAllGroups);
 app.listen(port, () => {
     console.log(`Server running on ${port}`);
