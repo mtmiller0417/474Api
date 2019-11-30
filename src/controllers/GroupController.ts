@@ -125,8 +125,8 @@ export const createEvent = async (req: Request, res: Response) => {
     console.log('\nTrying to create a new event for a specific group.');
 
     // Get the username from the user who created teh
-    //var user = parseUserFromHeader(req.headers);
-    //var username = user.username;
+    var user = parseUserFromHeader(req.headers.authorization);
+    var username = user.username;
 
     console.log("Got here 0");
 

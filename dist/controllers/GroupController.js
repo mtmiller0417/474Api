@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const group_1 = __importDefault(require("../models/group"));
 const passport_1 = require("../security/passport");
+const passport_2 = require("../security/passport");
 // GETs
 // Get all groups
 exports.allGroups = (req, res) => {
@@ -84,7 +85,7 @@ exports.createGroup = (req, res, next) => {
 // Creates a new message for a specific group (Updating a group essentially)
 exports.createMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to create a message for a specific group.');
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }
@@ -120,10 +121,10 @@ exports.createMessage = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.createEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to create a new event for a specific group.');
     // Get the username from the user who created teh
-    //var user = parseUserFromHeader(req.headers);
-    //var username = user.username;
+    var user = passport_1.parseUserFromHeader(req.headers.authorization);
+    var username = user.username;
     console.log("Got here 0");
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }
@@ -170,7 +171,7 @@ exports.createEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to edit a specific message');
     // Takes in group_id and message
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }
@@ -230,7 +231,7 @@ exports.editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.editGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to edit a specific group');
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }
@@ -276,7 +277,7 @@ exports.editGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.editEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to edit a specific event');
     // Takes in group_id and message
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }
@@ -373,7 +374,7 @@ exports.editEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 // Deletes a specific group
 exports.deleteGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to delete a specific group');
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }
@@ -390,7 +391,7 @@ exports.deleteGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.deleteEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to delete a specific event');
     // Takes in group_id and message
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }

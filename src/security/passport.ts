@@ -43,6 +43,7 @@ export const parseUserFromHeader = (authorization_header: any) => {
 };
 
 export const compareHeaderUserID = (user_id:any, authorization_header:any) => {
+    console.log("compareHeaderUserID");
     const jsonHeader = parseUserFromHeader(authorization_header);
     var header_id = jsonHeader._id;
 

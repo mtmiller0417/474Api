@@ -17,10 +17,15 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config/config");
 const bcrypt_nodejs_1 = __importDefault(require("bcrypt-nodejs"));
 const passport_1 = require("../security/passport");
-const passport_2 = require("../security/passport");
 // Used for bcrypt
 const saltRounds = 10;
 function generateToken(user) {
+    return jsonwebtoken_1.default.sign(user, config_1.secret, {
+        expiresIn: 10080 // in seconds
+    });
+}
+function generateTokenWOPicture(user) {
+    delete user.profilePicture;
     return jsonwebtoken_1.default.sign(user, config_1.secret, {
         expiresIn: 10080 // in seconds
     });
@@ -134,6 +139,7 @@ exports.addUser = (req, res, next) => {
                     return (err);
                 }
                 let userInfo = user.toJSON();
+                delete userInfo.profilePicture;
                 res.status(201).json({
                     token: 'Bearer ' + generateToken(userInfo),
                     user: userInfo
@@ -145,11 +151,12 @@ exports.addUser = (req, res, next) => {
 // Update a user
 exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("\nTrying to update a user");
-    // Check if the user is accessing their own data
-    if (!passport_2.compareHeaderUserID(req.body._id, req.headers.authorization)) {
-        return res.status(422).send({ error: 'You attempted to access data that is not yours' });
-    }
     const headerJSON = passport_1.parseUserFromHeader(req.headers.authorization);
+    // If the _id is only gotten from the header, then they must be accessing their own data
+    /*// Check if the user is accessing their own data
+    if(!compareHeaderUserID(headerJSON._id, req.headers.authorization)){ // req.body._id
+        return res.status(422).send({ error: 'You attempted to access data that is not yours' });
+    }*/
     var username = req.body.username;
     var password = req.body.password;
     var firstName = req.body.firstName;
