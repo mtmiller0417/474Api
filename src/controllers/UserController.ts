@@ -125,6 +125,7 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
             user.save(function(err, user){
                 if(err){ return (err); }
                 let userInfo = user.toJSON();
+                delete userInfo.profilePicture;
                 res.status(201).json({
                     token: 'Bearer ' + generateToken(userInfo), // Use 'JWT' as header?
                     user: userInfo
@@ -136,14 +137,16 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
 
 // Update a user
 export const updateUser = async (req: Request, res: Response) => {
-    console.log("\nTrying to update a user")
-
-    // Check if the user is accessing their own data
-    if(!compareHeaderUserID(req.body._id, req.headers.authorization)){
-        return res.status(422).send({ error: 'You attempted to access data that is not yours' });
-    }
+    console.log("\nTrying to update a user");
 
     const headerJSON = parseUserFromHeader(req.headers.authorization);
+
+    // If the _id is only gotten from the header, then they must be accessing their own data
+    /*// Check if the user is accessing their own data
+    if(!compareHeaderUserID(headerJSON._id, req.headers.authorization)){ // req.body._id
+        return res.status(422).send({ error: 'You attempted to access data that is not yours' });
+    }*/
+
 
     var username:string = req.body.username;
     var password:string = req.body.password;

@@ -53,6 +53,7 @@ exports.parseUserFromHeader = (authorization_header) => {
     return JSON.parse(strJson);
 };
 exports.compareHeaderUserID = (user_id, authorization_header) => {
+    console.log("compareHeaderUserID");
     const jsonHeader = exports.parseUserFromHeader(authorization_header);
     var header_id = jsonHeader._id;
     //console.log("user_id  : " + user_id)
