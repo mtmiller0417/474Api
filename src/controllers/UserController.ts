@@ -18,13 +18,6 @@ function generateToken(user: any) {
     });
 }
 
-function generateTokenWOPicture(user: any){
-    delete user.profilePicture;
-    return jwt.sign(user, secret, {
-        expiresIn: 10080 // in seconds
-    });
-}
-
 // GETs
 
 // Gets all the users
