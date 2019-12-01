@@ -74,8 +74,11 @@ exports.showUser = (req, res) => {
             }
             console.log('Correct password has been entered');
             const userInfo = user.toJson();
+            let userToken = JSON.parse(JSON.stringify(userInfo));
+            delete userToken.profilePicture;
+            console.log(userInfo);
             res.status(200).json({
-                token: 'Bearer ' + generateToken(userInfo),
+                token: 'Bearer ' + generateToken(userToken),
                 user: userInfo
             });
         });
@@ -132,10 +135,12 @@ exports.addUser = (req, res, next) => {
                 if (err) {
                     return (err);
                 }
-                let userInfo = user.toJSON();
-                delete userInfo.profilePicture;
+                const userInfo = user.toJSON();
+                let userToken = JSON.parse(JSON.stringify(userInfo));
+                delete userToken.profilePicture;
+                console.log(userInfo);
                 res.status(201).json({
-                    token: 'Bearer ' + generateToken(userInfo),
+                    token: 'Bearer ' + generateToken(userToken),
                     user: userInfo
                 });
             });

@@ -61,8 +61,11 @@ export const showUser = (req: Request, res: Response) => {
             if (!isMatch) { return res.status(400).json({ error: 'Your login details could not be verified. Please try again.' }); }
             console.log('Correct password has been entered')
             const userInfo = user.toJson();
+            let userToken = JSON.parse(JSON.stringify(userInfo));
+            delete userToken.profilePicture;
+            console.log(userInfo);
             res.status(200).json({
-                token: 'Bearer ' + generateToken(userInfo),
+                token: 'Bearer ' + generateToken(userToken),
                 user: userInfo
             });
         });
@@ -124,10 +127,12 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
 
             user.save(function(err, user){
                 if(err){ return (err); }
-                let userInfo = user.toJSON();
-                delete userInfo.profilePicture;
+                const userInfo = user.toJSON();
+                let userToken = JSON.parse(JSON.stringify(userInfo));
+                delete userToken.profilePicture;
+                console.log(userInfo);
                 res.status(201).json({
-                    token: 'Bearer ' + generateToken(userInfo), // Use 'JWT' as header?
+                    token: 'Bearer ' + generateToken(userToken), // Use 'JWT' as header?
                     user: userInfo
                 });
             });
