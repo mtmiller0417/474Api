@@ -21,7 +21,7 @@ var cors = require('cors');
 const app = express_1.default();
 const port = 5000 || process.env.PORT;
 //const db: string = "mongodb://<username>:<password>@mongo.mlab.com:<port>/<database_name>"
-app.use(cors);
+app.use(cors());
 connect_1.default(config_1.db);
 // Define routers
 const apiRoutes = express_1.default.Router(), userRoutes = express_1.default.Router(), groupRoutes = express_1.default.Router();

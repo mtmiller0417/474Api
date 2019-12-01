@@ -12,7 +12,7 @@ var cors = require('cors');
 const app: Application = express();
 const port: number = 5000 || process.env.PORT;
 //const db: string = "mongodb://<username>:<password>@mongo.mlab.com:<port>/<database_name>"
-app.use(cors);
+app.use(cors());
 connect(db);
 
 // Define routers
