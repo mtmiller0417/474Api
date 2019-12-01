@@ -17,9 +17,11 @@ const config_1 = require("./config/config");
 const UserController = __importStar(require("./controllers/UserController"));
 const GroupController = __importStar(require("./controllers/GroupController"));
 const passport_1 = require("./security/passport");
+var cors = require('cors');
 const app = express_1.default();
 const port = 5000 || process.env.PORT;
 //const db: string = "mongodb://<username>:<password>@mongo.mlab.com:<port>/<database_name>"
+app.use(cors);
 connect_1.default(config_1.db);
 // Define routers
 const apiRoutes = express_1.default.Router(), userRoutes = express_1.default.Router(), groupRoutes = express_1.default.Router();
@@ -39,12 +41,12 @@ groupRoutes.use(body_parser_1.default.json());
 groupRoutes.use(body_parser_1.default.urlencoded({ extended: true }));
 // GET
 userRoutes.get("/", UserController.allUsers);
-userRoutes.get("/user_id", UserController.showUser);
 userRoutes.get("/group_id", passport_1.requireAuth, UserController.getGroupIDs);
 groupRoutes.get("/", GroupController.allGroups);
 groupRoutes.get("/group_id", passport_1.requireAuth, GroupController.showGroup);
 // POST
 userRoutes.post("/", UserController.addUser);
+userRoutes.post("/user_id", UserController.showUser);
 groupRoutes.post("/", passport_1.requireAuth, GroupController.createGroup);
 groupRoutes.post("/messages", passport_1.requireAuth, GroupController.createMessage);
 groupRoutes.post("/events", passport_1.requireAuth, GroupController.createEvent);
