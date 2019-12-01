@@ -7,10 +7,12 @@ import * as UserController from "./controllers/UserController";
 import * as GroupController from "./controllers/GroupController";
 import { requireAuth } from './security/passport'
 
+var cors = require('cors');
+
 const app: Application = express();
 const port: number = 5000 || process.env.PORT;
 //const db: string = "mongodb://<username>:<password>@mongo.mlab.com:<port>/<database_name>"
-
+app.use(cors());
 connect(db);
 
 // Define routers
@@ -40,13 +42,13 @@ groupRoutes.use(bodyParser.urlencoded({ extended: true }));
 
 // GET
 userRoutes.get("/", UserController.allUsers); 
-userRoutes.get("/user_id", UserController.showUser);
 userRoutes.get("/group_id", requireAuth, UserController.getGroupIDs);
 groupRoutes.get("/", GroupController.allGroups);
 groupRoutes.get("/group_id", requireAuth, GroupController.showGroup);
 
 // POST
 userRoutes.post("/", UserController.addUser); 
+userRoutes.post("/user_id", UserController.showUser);
 groupRoutes.post("/", requireAuth, GroupController.createGroup);
 groupRoutes.post("/messages", requireAuth, GroupController.createMessage);
 groupRoutes.post("/events", requireAuth, GroupController.createEvent);
