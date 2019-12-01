@@ -63,7 +63,6 @@ export const showUser = (req: Request, res: Response) => {
             const userInfo = user.toJson();
             let userToken = JSON.parse(JSON.stringify(userInfo));
             delete userToken.profilePicture;
-            console.log(userInfo);
             res.status(200).json({
                 token: 'Bearer ' + generateToken(userToken),
                 user: userInfo
@@ -130,7 +129,6 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
                 const userInfo = user.toJSON();
                 let userToken = JSON.parse(JSON.stringify(userInfo));
                 delete userToken.profilePicture;
-                console.log(userInfo);
                 res.status(201).json({
                     token: 'Bearer ' + generateToken(userToken), // Use 'JWT' as header?
                     user: userInfo
