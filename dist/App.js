@@ -22,6 +22,11 @@ const app = express_1.default();
 const port = 5000 || process.env.PORT;
 //const db: string = "mongodb://<username>:<password>@mongo.mlab.com:<port>/<database_name>"
 app.use(cors());
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 connect_1.default(config_1.db);
 // Define routers
 const apiRoutes = express_1.default.Router(), userRoutes = express_1.default.Router(), groupRoutes = express_1.default.Router();
