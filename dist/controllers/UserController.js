@@ -24,12 +24,6 @@ function generateToken(user) {
         expiresIn: 10080 // in seconds
     });
 }
-function generateTokenWOPicture(user) {
-    delete user.profilePicture;
-    return jsonwebtoken_1.default.sign(user, config_1.secret, {
-        expiresIn: 10080 // in seconds
-    });
-}
 // GETs
 // Gets all the users
 exports.allUsers = (req, res) => {
