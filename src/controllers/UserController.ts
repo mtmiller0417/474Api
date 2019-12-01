@@ -186,7 +186,8 @@ export const updateUser = async (req: Request, res: Response) => {
 
     //const user = await User.findById({_id:req.body._id}); // Wait for this response
     
-    await User.updateOne({_id: headerJSON._id}, update, (err: any) => {
+    // Gotten rid of await (check to see if it still returns an error.)
+    User.updateOne({_id: headerJSON._id}, update, (err: any) => {
         if(err){
             res.send(err);
         } else {
