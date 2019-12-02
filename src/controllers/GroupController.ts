@@ -10,6 +10,7 @@ import bcrypt from 'bcrypt-nodejs';
 import { parseUserFromHeader } from '../security/passport'
 import { compareHeaderUserID } from '../security/passport'
 import { checkUserInGroup } from '../security/passport'
+import passport from "passport";
 
 
 // GETs
@@ -123,8 +124,16 @@ export const createMessage = async (req: Request, res: Response) => {
 export const createEvent = async (req: Request, res: Response) => {
     console.log('\nTrying to create a new event for a specific group.');
 
+    // Get the username from the user who created teh
+    var user = parseUserFromHeader(req.headers.authorization);
+    var username = user.username;
+
+    console.log("Got here 0");
+
     const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
     if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) } 
+
+    console.log("Got here");
 
     Group.findOne({_id: req.body._id}, function(err: any, group: any) {
         if (err) {
@@ -206,7 +215,6 @@ export const editMessage = async (req: Request, res: Response) => {
         }
     }
     if(index > -1){
-        //messageList[index] = update;
         if(text){ messageList[index].text = update.text }
         if(time_sent){ messageList[index].time_sent = update.time_sent }
         if(senderUsername){ messageList[index].senderUsername = update.senderUsername }
@@ -221,6 +229,44 @@ export const editMessage = async (req: Request, res: Response) => {
     });
 }
 
+export const editGroup = async (req: Request, res:Response) => {
+    console.log('\nTrying to edit a specific group')
+
+    const bool  = await checkUserInGroup(req.body._id, req.headers.authorization);
+    if(!bool){ return res.status(422).send({error: 'User does not belongs to the group'}) }
+
+    var groupName = req.body.groupName;
+    var members = req.body.members;
+    var messages = req.body.messages;
+    var events = req.body.events;
+    var groupImage = req.body.groupImage;
+
+    // Create an initial JSON
+    var update = {
+        groupName: groupName,
+        members: members,
+        messages: messages,
+        events: events,
+        groupImage: groupImage
+    }
+
+    // Get rid of attributes that weren't passed in
+    if(!groupName){ delete update.groupName }
+    if(!members){ delete update.members }
+    if(!messages){ delete update.messages }
+    if(!events){ delete update.events }
+    if(!groupImage){ delete update.groupImage }
+
+
+    await Group.updateOne({_id:req.body._id}, update, (err: any) => {
+        if(err){
+            res.send(err);
+        } else {
+            res.send('Group has been updated')
+        }
+    });
+}
+
 // Edits an event to a specific groups eventList
 export const editEvent = async (req: Request, res: Response) => {
     console.log('\nTrying to edit a specific event')
@@ -231,6 +277,7 @@ export const editEvent = async (req: Request, res: Response) => {
     // Get the group the user is trying to edit
     const group:any = await Group.findById({_id: req.body._id}); // Wait for the call to come back
     if(!group){ return res.status(422).send({error: 'User not found'}) }
+    // Get the event from the group
     const eventList = group.events;
 
     var title: String = req.body.title;

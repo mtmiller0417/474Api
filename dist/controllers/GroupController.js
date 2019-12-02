@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const group_1 = __importDefault(require("../models/group"));
 const passport_1 = require("../security/passport");
+const passport_2 = require("../security/passport");
 // GETs
 // Get all groups
 exports.allGroups = (req, res) => {
@@ -84,7 +85,7 @@ exports.createGroup = (req, res, next) => {
 // Creates a new message for a specific group (Updating a group essentially)
 exports.createMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to create a message for a specific group.');
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }
@@ -119,10 +120,15 @@ exports.createMessage = (req, res) => __awaiter(void 0, void 0, void 0, function
 // Creates a new event for a specific group
 exports.createEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to create a new event for a specific group.');
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    // Get the username from the user who created teh
+    var user = passport_1.parseUserFromHeader(req.headers.authorization);
+    var username = user.username;
+    console.log("Got here 0");
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }
+    console.log("Got here");
     group_1.default.findOne({ _id: req.body._id }, function (err, group) {
         if (err) {
             return res.status(400).json({ error: 'bad data 0' });
@@ -165,7 +171,7 @@ exports.createEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to edit a specific message');
     // Takes in group_id and message
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }
@@ -203,7 +209,6 @@ exports.editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
     }
     if (index > -1) {
-        //messageList[index] = update;
         if (text) {
             messageList[index].text = update.text;
         }
@@ -224,11 +229,55 @@ exports.editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
     });
 });
+exports.editGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('\nTrying to edit a specific group');
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
+    if (!bool) {
+        return res.status(422).send({ error: 'User does not belongs to the group' });
+    }
+    var groupName = req.body.groupName;
+    var members = req.body.members;
+    var messages = req.body.messages;
+    var events = req.body.events;
+    var groupImage = req.body.groupImage;
+    // Create an initial JSON
+    var update = {
+        groupName: groupName,
+        members: members,
+        messages: messages,
+        events: events,
+        groupImage: groupImage
+    };
+    // Get rid of attributes that weren't passed in
+    if (!groupName) {
+        delete update.groupName;
+    }
+    if (!members) {
+        delete update.members;
+    }
+    if (!messages) {
+        delete update.messages;
+    }
+    if (!events) {
+        delete update.events;
+    }
+    if (!groupImage) {
+        delete update.groupImage;
+    }
+    yield group_1.default.updateOne({ _id: req.body._id }, update, (err) => {
+        if (err) {
+            res.send(err);
+        }
+        else {
+            res.send('Group has been updated');
+        }
+    });
+});
 // Edits an event to a specific groups eventList
 exports.editEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to edit a specific event');
     // Takes in group_id and message
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }
@@ -237,6 +286,7 @@ exports.editEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     if (!group) {
         return res.status(422).send({ error: 'User not found' });
     }
+    // Get the event from the group
     const eventList = group.events;
     var title = req.body.title;
     var description = req.body.description;
@@ -324,7 +374,7 @@ exports.editEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 // Deletes a specific group
 exports.deleteGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to delete a specific group');
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }
@@ -341,7 +391,7 @@ exports.deleteGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.deleteEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('\nTrying to delete a specific event');
     // Takes in group_id and message
-    const bool = yield passport_1.checkUserInGroup(req.body._id, req.headers.authorization);
+    const bool = yield passport_2.checkUserInGroup(req.body._id, req.headers.authorization);
     if (!bool) {
         return res.status(422).send({ error: 'User does not belongs to the group' });
     }

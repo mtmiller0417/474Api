@@ -61,8 +61,10 @@ export const showUser = (req: Request, res: Response) => {
             if (!isMatch) { return res.status(400).json({ error: 'Your login details could not be verified. Please try again.' }); }
             console.log('Correct password has been entered')
             const userInfo = user.toJson();
+            let userToken = JSON.parse(JSON.stringify(userInfo));
+            delete userToken.profilePicture;
             res.status(200).json({
-                token: 'Bearer ' + generateToken(userInfo),
+                token: 'Bearer ' + generateToken(userToken),
                 user: userInfo
             });
         });
@@ -124,9 +126,11 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
 
             user.save(function(err, user){
                 if(err){ return (err); }
-                let userInfo = user.toJSON();
+                const userInfo = user.toJSON();
+                let userToken = JSON.parse(JSON.stringify(userInfo));
+                delete userToken.profilePicture;
                 res.status(201).json({
-                    token: 'Bearer ' + generateToken(userInfo), // Use 'JWT' as header?
+                    token: 'Bearer ' + generateToken(userToken), // Use 'JWT' as header?
                     user: userInfo
                 });
             });
@@ -136,14 +140,16 @@ export const addUser = (req: Request, res: Response, next: NextFunction) => {
 
 // Update a user
 export const updateUser = async (req: Request, res: Response) => {
-    console.log("\nTrying to update a user")
-
-    // Check if the user is accessing their own data
-    if(!compareHeaderUserID(req.body._id, req.headers.authorization)){
-        return res.status(422).send({ error: 'You attempted to access data that is not yours' });
-    }
+    console.log("\nTrying to update a user");
 
     const headerJSON = parseUserFromHeader(req.headers.authorization);
+
+    // If the _id is only gotten from the header, then they must be accessing their own data
+    /*// Check if the user is accessing their own data
+    if(!compareHeaderUserID(headerJSON._id, req.headers.authorization)){ // req.body._id
+        return res.status(422).send({ error: 'You attempted to access data that is not yours' });
+    }*/
+
 
     var username:string = req.body.username;
     var password:string = req.body.password;
@@ -180,7 +186,8 @@ export const updateUser = async (req: Request, res: Response) => {
 
     //const user = await User.findById({_id:req.body._id}); // Wait for this response
     
-    await User.updateOne({_id: headerJSON._id}, update, (err: any) => {
+    // Gotten rid of await (check to see if it still returns an error.)
+    User.updateOne({_id: headerJSON._id}, update, (err: any) => {
         if(err){
             res.send(err);
         } else {

@@ -17,7 +17,6 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config/config");
 const bcrypt_nodejs_1 = __importDefault(require("bcrypt-nodejs"));
 const passport_1 = require("../security/passport");
-const passport_2 = require("../security/passport");
 // Used for bcrypt
 const saltRounds = 10;
 function generateToken(user) {
@@ -75,8 +74,10 @@ exports.showUser = (req, res) => {
             }
             console.log('Correct password has been entered');
             const userInfo = user.toJson();
+            let userToken = JSON.parse(JSON.stringify(userInfo));
+            delete userToken.profilePicture;
             res.status(200).json({
-                token: 'Bearer ' + generateToken(userInfo),
+                token: 'Bearer ' + generateToken(userToken),
                 user: userInfo
             });
         });
@@ -133,9 +134,11 @@ exports.addUser = (req, res, next) => {
                 if (err) {
                     return (err);
                 }
-                let userInfo = user.toJSON();
+                const userInfo = user.toJSON();
+                let userToken = JSON.parse(JSON.stringify(userInfo));
+                delete userToken.profilePicture;
                 res.status(201).json({
-                    token: 'Bearer ' + generateToken(userInfo),
+                    token: 'Bearer ' + generateToken(userToken),
                     user: userInfo
                 });
             });
@@ -145,11 +148,12 @@ exports.addUser = (req, res, next) => {
 // Update a user
 exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("\nTrying to update a user");
-    // Check if the user is accessing their own data
-    if (!passport_2.compareHeaderUserID(req.body._id, req.headers.authorization)) {
-        return res.status(422).send({ error: 'You attempted to access data that is not yours' });
-    }
     const headerJSON = passport_1.parseUserFromHeader(req.headers.authorization);
+    // If the _id is only gotten from the header, then they must be accessing their own data
+    /*// Check if the user is accessing their own data
+    if(!compareHeaderUserID(headerJSON._id, req.headers.authorization)){ // req.body._id
+        return res.status(422).send({ error: 'You attempted to access data that is not yours' });
+    }*/
     var username = req.body.username;
     var password = req.body.password;
     var firstName = req.body.firstName;
@@ -200,7 +204,8 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         console.log(password);
     }
     //const user = await User.findById({_id:req.body._id}); // Wait for this response
-    yield user_1.default.updateOne({ _id: headerJSON._id }, update, (err) => {
+    // Gotten rid of await (check to see if it still returns an error.)
+    user_1.default.updateOne({ _id: headerJSON._id }, update, (err) => {
         if (err) {
             res.send(err);
         }
