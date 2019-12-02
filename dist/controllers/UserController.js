@@ -204,7 +204,7 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         console.log(password);
     }
     //const user = await User.findById({_id:req.body._id}); // Wait for this response
-    // Gotten rid of await
+    // Gotten rid of await (check to see if it still returns an error.)
     user_1.default.updateOne({ _id: headerJSON._id }, update, (err) => {
         if (err) {
             res.send(err);

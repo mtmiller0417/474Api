@@ -5,6 +5,7 @@ import { db } from '../config/config';
 import User from '../models/user';
 import { secret } from '../config/config'
 import atob from 'atob';
+import Group from '../models/group';
 
 const ExtractJwt = passport_jwt.ExtractJwt
 const JwtStrategy = passport_jwt.Strategy
@@ -66,12 +67,24 @@ export const checkUserInGroup = async (group_id: any, authorization_header:any) 
     // Get the user_id from the token header
     const user_id = parseUserFromHeader(authorization_header)._id;
 
+    const group: any = await Group.findById({_id:group_id});
+    if (group == null)
+        return false;
+
     // Get the list of groups that the user belongs to
     const user: any = await User.findById({_id:user_id}); // Wait for this response
     if(user == null){ // User does not exist
         return false;
     }
 
+    if(!group.members){
+        return false;
+    }
+    else{
+        return group.members.includes(user.username);
+    }
+
+    /*
     const user_group_ids: [any] = user.groupIDs;
 
     // Return whether the passed in group_id is in the list the user belongs to
@@ -81,4 +94,5 @@ export const checkUserInGroup = async (group_id: any, authorization_header:any) 
     else{
         return user_group_ids.includes(group_id);
     }
+    */
 };

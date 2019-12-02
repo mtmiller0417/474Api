@@ -18,6 +18,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const user_1 = __importDefault(require("../models/user"));
 const config_1 = require("../config/config");
 const atob_1 = __importDefault(require("atob"));
+const group_1 = __importDefault(require("../models/group"));
 const ExtractJwt = passport_jwt_1.default.ExtractJwt;
 const JwtStrategy = passport_jwt_1.default.Strategy;
 const jwtOptions = {
@@ -71,18 +72,30 @@ exports.compareHeaderUserID = (user_id, authorization_header) => {
 exports.checkUserInGroup = (group_id, authorization_header) => __awaiter(void 0, void 0, void 0, function* () {
     // Get the user_id from the token header
     const user_id = exports.parseUserFromHeader(authorization_header)._id;
+    const group = yield group_1.default.findById({ _id: group_id });
+    if (group == null)
+        return false;
     // Get the list of groups that the user belongs to
     const user = yield user_1.default.findById({ _id: user_id }); // Wait for this response
     if (user == null) { // User does not exist
         return false;
     }
-    const user_group_ids = user.groupIDs;
-    // Return whether the passed in group_id is in the list the user belongs to
-    if (!user_group_ids) {
+    if (!group.members) {
         return false;
     }
     else {
+        return group.members.includes(user.username);
+    }
+    /*
+    const user_group_ids: [any] = user.groupIDs;
+
+    // Return whether the passed in group_id is in the list the user belongs to
+    if(!user_group_ids){
+        return false;
+    }
+    else{
         return user_group_ids.includes(group_id);
     }
+    */
 });
 //# sourceMappingURL=passport.js.map
