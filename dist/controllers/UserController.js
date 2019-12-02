@@ -61,9 +61,11 @@ exports.showUser = (req, res) => {
     console.log('\nGet a specific user');
     user_1.default.findOne({ username: req.body.username }, function (err, user) {
         if (err) {
+            console.log("err1");
             return res.status(400).json({ error: "bad data 0" });
         }
         if (!user) {
+            console.log("err2");
             return res.status(400).json({ error: 'Your login details could not be verified. Please try again.' });
         }
         user.comparePassword(req.body.password, function (err, isMatch) {
