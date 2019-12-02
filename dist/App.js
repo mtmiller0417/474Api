@@ -17,6 +17,7 @@ const config_1 = require("./config/config");
 const UserController = __importStar(require("./controllers/UserController"));
 const GroupController = __importStar(require("./controllers/GroupController"));
 const passport_1 = require("./security/passport");
+const chat_server_1 = require("./chat-server");
 var cors = require('cors');
 const app = express_1.default();
 const port = 5000 || process.env.PORT;
@@ -28,8 +29,25 @@ app.use(function (req, res, next) {
     next();
 });
 connect_1.default(config_1.db);
+//sets up socket.io for chat
+const http = require("http").Server(app);
+const io = require("socket.io");
+const socket = io(http);
+//setup event listener
+socket.on("connection", (socket) => {
+    console.log("user connected");
+    socket.on("disconnect", function () {
+        console.log("user disconnected");
+    });
+});
 // Define routers
 const apiRoutes = express_1.default.Router(), userRoutes = express_1.default.Router(), groupRoutes = express_1.default.Router();
+//enable CORS
+// apiRoutes.use(function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "http://localhost:4300"); // update to match the domain you will make the request from
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//   next();
+// });
 //Connect routers together
 app.use('/api', apiRoutes);
 apiRoutes.use('/users', userRoutes);
@@ -66,6 +84,8 @@ userRoutes.delete("/", UserController.deleteAll);
 groupRoutes.delete("/group_id", passport_1.requireAuth, GroupController.deleteGroup);
 groupRoutes.delete("/event", passport_1.requireAuth, GroupController.deleteEvent);
 groupRoutes.delete("/", GroupController.deleteAllGroups);
+let chatApp = new chat_server_1.ChatServer().getApp();
+exports.chatApp = chatApp;
 app.listen(port, () => {
     console.log(`Server running on ${port}`);
 });

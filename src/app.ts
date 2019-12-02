@@ -6,6 +6,7 @@ import { db } from "./config/config";
 import * as UserController from "./controllers/UserController";
 import * as GroupController from "./controllers/GroupController";
 import { requireAuth } from './security/passport'
+import { ChatServer } from './chat-server';
 
 var cors = require('cors');
 
@@ -21,10 +22,34 @@ app.use(function(req, res, next) {
 
 connect(db);
 
+//sets up socket.io for chat
+const http = require("http").Server(app);
+const io = require("socket.io");
+const socket = io(http);
+
+//setup event listener
+socket.on("connection", (socket:any) => {
+  console.log("user connected");
+
+  socket.on("disconnect", function() {
+    console.log("user disconnected");
+  });
+});
+
+
+
+
 // Define routers
 const apiRoutes = express.Router(),
       userRoutes = express.Router(),
       groupRoutes = express.Router();
+
+//enable CORS
+// apiRoutes.use(function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "http://localhost:4300"); // update to match the domain you will make the request from
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//   next();
+// });
 
 //Connect routers together
 app.use('/api', apiRoutes);
@@ -73,6 +98,10 @@ groupRoutes.delete("/group_id", requireAuth, GroupController.deleteGroup);
 groupRoutes.delete("/event", requireAuth, GroupController.deleteEvent);
 groupRoutes.delete("/", GroupController.deleteAllGroups);
 
+
+
+let chatApp = new ChatServer().getApp();
+export { chatApp };
 
 app.listen(port, () => {
   console.log(`Server running on ${port}`);

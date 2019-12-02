@@ -109,6 +109,7 @@ export const createMessage = async (req: Request, res: Response) => {
         
         //console.log(group.messages);
         group.messages.push(new_message);
+        
         //console.log(group.messages);
         Group.updateOne({_id: req.body._id}, {messages: group.messages}, (err: any) => {
             if(err){

@@ -54,8 +54,10 @@ export const getGroupIDs = (req: Request, res: Response) => {
 export const showUser = (req: Request, res: Response) => {
     console.log('\nGet a specific user')
     User.findOne({username: req.body.username}, function(err: any, user: any){
-        if(err) {  return res.status(400).json({ error: "bad data 0" }); }
-        if (!user) { return res.status(400).json({ error: 'Your login details could not be verified. Please try again.' }); }
+        if(err) {  console.log("err1");
+            return res.status(400).json({ error: "bad data 0" }); }
+        if (!user) { console.log("err2");
+            return res.status(400).json({ error: 'Your login details could not be verified. Please try again.' }); }
         user.comparePassword(req.body.password, function(err:any, isMatch:any){
             if(err) { return res.status(400).json({error: "bad data 1"})}
             if (!isMatch) { return res.status(400).json({ error: 'Your login details could not be verified. Please try again.' }); }
